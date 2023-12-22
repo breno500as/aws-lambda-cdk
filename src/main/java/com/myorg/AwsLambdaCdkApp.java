@@ -1,42 +1,40 @@
 package com.myorg;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import software.amazon.awscdk.App;
 import software.amazon.awscdk.Environment;
 import software.amazon.awscdk.StackProps;
 
-import java.util.Arrays;
-
 public class AwsLambdaCdkApp {
-    public static void main(final String[] args) {
-        App app = new App();
 
-        new AwsLambdaCdkStack(app, "AwsLambdaCdkStack", StackProps.builder()
-                // If you don't specify 'env', this stack will be environment-agnostic.
-                // Account/Region-dependent features and context lookups will not work,
-                // but a single synthesized template can be deployed anywhere.
+	private static final String REGION = "us-east-1";
 
-                // Uncomment the next block to specialize this stack for the AWS Account
-                // and Region that are implied by the current CLI configuration.
-                /*
-                .env(Environment.builder()
-                        .account(System.getenv("CDK_DEFAULT_ACCOUNT"))
-                        .region(System.getenv("CDK_DEFAULT_REGION"))
-                        .build())
-                */
+	private static final String ACCOUNT = "596058222797";
 
-                // Uncomment the next block if you know exactly what Account and Region you
-                // want to deploy the stack to.
-                /*
-                .env(Environment.builder()
-                        .account("123456789012")
-                        .region("us-east-1")
-                        .build())
-                */
+	public static void main(final String[] args) {
+		App app = new App();
 
-                // For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
-                .build());
+		final Map<String, String> tags = new HashMap<String, String>();
+		tags.put("Ecommerce", "Ecommerce team");
 
-        app.synth();
-    }
+		final StackProps stackProps = StackProps.builder()
+				                                .tags(tags)
+				                                .env(Environment.builder()
+				                                		         .account(ACCOUNT)
+				                                		         .region(REGION)
+				                                		         .build())
+				                                .build();
+
+		final ProductCommonsStack productCommonsStack = new ProductCommonsStack();
+
+		final LambdaFunctionProductStack lambdaFunctionProductStack = new LambdaFunctionProductStack(app,
+				"LambdaFunctionProductStack", productCommonsStack, stackProps);
+
+		final ApiGatewayProductStack apiGatewayProductStack = new ApiGatewayProductStack(app, "ApiGatewayProductStack",productCommonsStack, stackProps);
+		apiGatewayProductStack.addDependency(lambdaFunctionProductStack);
+
+		app.synth();
+	}
 }
-

@@ -20,7 +20,7 @@ public class ApiGatewayProductStack  extends Stack {
 	
  
 
-	public ApiGatewayProductStack(final Construct scope, final String id, ProductCommonsStack productCommonsStack, StackProps stackProps) {
+	public ApiGatewayProductStack(final Construct scope, final String id, ProductCommons productCommonsStack, StackProps stackProps) {
 		
 		 super(scope, id, stackProps);
 		 
@@ -47,11 +47,21 @@ public class ApiGatewayProductStack  extends Stack {
 						        .build())
 				 .build());
 		 
+		 
+		final LambdaIntegration lambdaFetchIntegration = LambdaIntegration.Builder.create(productCommonsStack.getProductsFetchFunction()).build();
+		 
 		 final Resource resource =  restApi.getRoot().addResource("products");
-		 resource.addMethod(HttpMethod.GET.toString(), LambdaIntegration.Builder.create(productCommonsStack.getProductsFetchFunction()).build());
-		 resource.addMethod(HttpMethod.POST.toString(), LambdaIntegration.Builder.create(productCommonsStack.getProductsAdminFunction()).build());
-		 resource.addMethod(HttpMethod.PUT.toString(), LambdaIntegration.Builder.create(productCommonsStack.getProductsAdminFunction()).build());
-		 resource.addMethod(HttpMethod.DELETE.toString(), LambdaIntegration.Builder.create(productCommonsStack.getProductsAdminFunction()).build());
+		 resource.addMethod(HttpMethod.GET.toString(), lambdaFetchIntegration);
+		 
+		 final Resource productIdResource = resource.addResource("{id}");
+		 productIdResource.addMethod(HttpMethod.GET.toString(), lambdaFetchIntegration);
+		 
+		 final LambdaIntegration lambdaAdminIntegration = LambdaIntegration.Builder.create(productCommonsStack.getProductsAdminFunction()).build();
+		 
+		 resource.addMethod(HttpMethod.POST.toString(), lambdaAdminIntegration);
+		 productIdResource.addMethod(HttpMethod.PUT.toString(), lambdaAdminIntegration);
+		 productIdResource.addMethod(HttpMethod.DELETE.toString(), lambdaAdminIntegration);
+		 
 		 
 		// Exporta como parâmetro a url do API Gateway
 		//  new CfnOutput(this, "HttApiProductsFetch", CfnOutputProps.builder()

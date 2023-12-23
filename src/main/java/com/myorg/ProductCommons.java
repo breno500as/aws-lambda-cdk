@@ -2,7 +2,7 @@ package com.myorg;
 
 import software.amazon.awscdk.services.lambda.Function;
 
-public class ProductCommonsStack {
+public class ProductCommons {
 
 	private Function productsFetchFunction;
 

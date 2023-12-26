@@ -28,7 +28,6 @@ public class DynamoDbStack  extends Stack {
 				.writeCapacity(1)
 				.billingMode(BillingMode.PROVISIONED)
 				.partitionKey(Attribute.builder().name("id").type(AttributeType.STRING).build())
-				.sortKey(Attribute.builder().name("sk").type(AttributeType.STRING).build())
 				.timeToLiveAttribute("ttl")
 				.removalPolicy(RemovalPolicy.DESTROY).build();
 

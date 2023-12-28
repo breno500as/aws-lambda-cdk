@@ -43,6 +43,7 @@ public class AwsLambdaCdkApp {
 		
 		
 		new DynamoDbStack(app, "DynamoDbStack", productCommonsStack, stackProps);
+		//new EventsDynamoDbStack(app, "EventsDynamoDbStack", productCommonsStack, stackProps);
 		 
 
 		app.synth();

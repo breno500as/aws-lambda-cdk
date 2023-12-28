@@ -31,7 +31,7 @@ public class LambdaLayersProductStack extends Stack implements DockerBuildStack 
 						                                                                         .build()))
 				                                                          .layerVersionName("ProductsLayer")
 				                                                          .removalPolicy(RemovalPolicy.RETAIN)
-				                                                          .compatibleRuntimes(Arrays.asList(Runtime.JAVA_11))
+				                                                          .compatibleRuntimes(Arrays.asList(Runtime.JAVA_17))
 						                                                  .build());
 		
 		// Cria um parâmetro no system manager parameter store para que a layer possa ser referenciada em uma lambda function

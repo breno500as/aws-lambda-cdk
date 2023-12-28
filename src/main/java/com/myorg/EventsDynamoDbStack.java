@@ -12,25 +12,27 @@ import software.amazon.awscdk.services.dynamodb.Table;
 import software.amazon.awscdk.services.dynamodb.UtilizationScalingProps;
 import software.constructs.Construct;
 
-public class DynamoDbStack  extends Stack {
+public class EventsDynamoDbStack extends Stack {
 	
-	private Table productTable;
+private Table eventsTable;
 	
-	public static final String TABLE_PRODUCT = "product";
+	public static final String TABLE_EVENTS = "events";
 	
 	
-	public DynamoDbStack(final Construct scope, final String id, ProductCommons productCommonsStack, StackProps stackProps) {
+	public EventsDynamoDbStack(final Construct scope, final String id, ProductCommons productCommonsStack, StackProps stackProps) {
 		super(scope, id, stackProps);
 		
-		this.productTable = Table.Builder.create(this, "ProductTable")
-				.tableName(TABLE_PRODUCT)
+		this.eventsTable = Table.Builder.create(this, "EventsTable")
+				.tableName(TABLE_EVENTS)
 				.readCapacity(1)
 				.writeCapacity(1)
 				.billingMode(BillingMode.PROVISIONED)
-				.partitionKey(Attribute.builder().name("id").type(AttributeType.STRING).build())
+				.partitionKey(Attribute.builder().name("pk").type(AttributeType.STRING).build())
+				.sortKey(Attribute.builder().name("sk").type(AttributeType.STRING).build())
+				.timeToLiveAttribute("ttl")
 				.removalPolicy(RemovalPolicy.DESTROY).build();
 
-		this.productTable.autoScaleReadCapacity(EnableScalingProps.builder()
+		this.eventsTable.autoScaleReadCapacity(EnableScalingProps.builder()
 				                                      .minCapacity(1)
 				                                      .maxCapacity(4)
 				                                      .build())
@@ -40,7 +42,7 @@ public class DynamoDbStack  extends Stack {
 						                                                       .build());
 		
 		
-		this.productTable.autoScaleWriteCapacity(EnableScalingProps.builder()
+		this.eventsTable.autoScaleWriteCapacity(EnableScalingProps.builder()
 				                                                   .minCapacity(1)
 				                                                   .maxCapacity(4)
 				                                                   .build())
@@ -49,16 +51,14 @@ public class DynamoDbStack  extends Stack {
 				                                                               .scaleOutCooldown(Duration.seconds(30))
 				                                                               .build());
 		
-		this.productTable.grantReadData(productCommonsStack.getProductsFetchFunction());
-		this.productTable.grantWriteData(productCommonsStack.getProductsAdminFunction());
+		this.eventsTable.grantReadData(productCommonsStack.getProductsFetchFunction());
+		this.eventsTable.grantWriteData(productCommonsStack.getProductsAdminFunction());
 	}
 	
 	
 	
-	public Table getProductTable() {
-		return productTable;
+	public Table getEventsTable() {
+		return eventsTable;
 	}
-	
-
 
 }

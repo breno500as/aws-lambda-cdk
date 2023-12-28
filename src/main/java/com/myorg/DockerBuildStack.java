@@ -17,7 +17,7 @@ public interface DockerBuildStack {
 				.command(Arrays.asList("/bin/sh", 
 						               "-c",
 						               "mvn clean install " + "&& cp /asset-input/target/" + projectName + ".jar /asset-output/"))
-				.image(Runtime.JAVA_11.getBundlingImage())
+				.image(Runtime.JAVA_17.getBundlingImage())
 				// Mount local .m2 repo to avoid download all the dependencies again inside the
 				// container
 				.volumes(singletonList(DockerVolume.builder()

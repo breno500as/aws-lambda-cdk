@@ -8,6 +8,8 @@ public class ProductCommons {
 
 	private Function productsAdminFunction;
 
+	private Function eventsFunction;
+
 	public Function getProductsFetchFunction() {
 		return productsFetchFunction;
 	}
@@ -22,6 +24,14 @@ public class ProductCommons {
 
 	public void setProductsAdminFunction(Function productsAdminFunction) {
 		this.productsAdminFunction = productsAdminFunction;
+	}
+
+	public Function getEventsFunction() {
+		return eventsFunction;
+	}
+
+	public void setEventsFunction(Function eventsFunction) {
+		this.eventsFunction = eventsFunction;
 	}
 
 }

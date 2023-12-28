@@ -33,6 +33,7 @@ public class ApiGatewayProductStack  extends Stack {
 							                                                                      .logGroupName("ECommerceApiLogs")
 							                                                                      .removalPolicy(RemovalPolicy.DESTROY)
 							                                                                      .build()))
+						        .tracingEnabled(Boolean.TRUE)
 						        .accessLogFormat(AccessLogFormat.jsonWithStandardFields(JsonWithStandardFieldProps.builder()
 						        		                                                                          .httpMethod(true)
 						        		                                                                          .ip(true)

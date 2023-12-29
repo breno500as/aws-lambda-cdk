@@ -7,7 +7,6 @@ import java.util.Arrays;
 
 import software.amazon.awscdk.BundlingOptions;
 import software.amazon.awscdk.DockerVolume;
-import software.amazon.awscdk.services.lambda.Runtime;
 
 public interface DockerBuildStack {
 
@@ -17,7 +16,7 @@ public interface DockerBuildStack {
 				.command(Arrays.asList("/bin/sh", 
 						               "-c",
 						               "mvn clean install " + "&& cp /asset-input/target/" + projectName + ".jar /asset-output/"))
-				.image(Runtime.JAVA_17.getBundlingImage())
+				.image(AwsLambdaCdkApp.PROJECT_JAVA_RUNTIME.getBundlingImage())
 				// Mount local .m2 repo to avoid download all the dependencies again inside the
 				// container
 				.volumes(singletonList(DockerVolume.builder()

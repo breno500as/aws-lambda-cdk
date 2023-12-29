@@ -6,6 +6,7 @@ import java.util.Map;
 import software.amazon.awscdk.App;
 import software.amazon.awscdk.Environment;
 import software.amazon.awscdk.StackProps;
+import software.amazon.awscdk.services.lambda.Runtime;
 
 public class AwsLambdaCdkApp {
 
@@ -14,6 +15,12 @@ public class AwsLambdaCdkApp {
 	private static final String ACCOUNT = "596058222797";
 	
 	public static final String PROJECT_LAMBDA_FUNCTIONS_NAME = "aws-ecommerce-lambda-functions";
+	
+	public static final String POWERTOOLS_SERVICE_NAME = "POWERTOOLS_SERVICE_NAME";
+	
+	public static final String POWERTOOLS_SERVICE_VALUE = "Ecommerce x-ray tracing";
+	
+	public static final Runtime PROJECT_JAVA_RUNTIME = Runtime.JAVA_17;
 
 	public static void main(final String[] args) {
 		App app = new App();
@@ -29,21 +36,21 @@ public class AwsLambdaCdkApp {
 				                                		         .build())
 				                                .build();
 
-		final ProductCommons productCommonsStack = new ProductCommons();
+		final EcommerceCommons ecommerceCommons = new EcommerceCommons();
 		
-		final LambdaLayersProductStack lambdaLayersProductStack = new LambdaLayersProductStack(app,
-				"LambdaLayersProductStack", stackProps);
+		final LambdaLayersStack lambdaLayersProductStack = new LambdaLayersStack(app,
+				"LambdaLayersStack", stackProps);
 
 		final LambdaFunctionProductStack lambdaFunctionProductStack = new LambdaFunctionProductStack(app,
-				"LambdaFunctionProductStack", productCommonsStack, stackProps);
+				"LambdaFunctionProductStack", ecommerceCommons, stackProps);
 		lambdaFunctionProductStack.addDependency(lambdaLayersProductStack);
-
-		final ApiGatewayProductStack apiGatewayProductStack = new ApiGatewayProductStack(app, "ApiGatewayProductStack",productCommonsStack, stackProps);
+		
+		final ApiGatewayProductStack apiGatewayProductStack = new ApiGatewayProductStack(app, "ApiGatewayProductStack",ecommerceCommons, stackProps);
 		apiGatewayProductStack.addDependency(lambdaFunctionProductStack);
 		
-		
-		new DynamoDbStack(app, "DynamoDbStack", productCommonsStack, stackProps);
-		//new EventsDynamoDbStack(app, "EventsDynamoDbStack", productCommonsStack, stackProps);
+		new LambdaFunctionEventsStack(app, "LambdaFunctionEventsStack", ecommerceCommons, stackProps);
+	
+		new DynamoDbStack(app, "DynamoDbStack", ecommerceCommons, stackProps);
 		 
 
 		app.synth();

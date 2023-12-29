@@ -20,7 +20,7 @@ public class ApiGatewayProductStack  extends Stack {
 	
  
 
-	public ApiGatewayProductStack(final Construct scope, final String id, ProductCommons productCommonsStack, StackProps stackProps) {
+	public ApiGatewayProductStack(final Construct scope, final String id, EcommerceCommons ecommerceCommons, StackProps stackProps) {
 		
 		 super(scope, id, stackProps);
 		 
@@ -49,7 +49,7 @@ public class ApiGatewayProductStack  extends Stack {
 				 .build());
 		 
 		 
-		final LambdaIntegration lambdaFetchIntegration = LambdaIntegration.Builder.create(productCommonsStack.getProductsFetchFunction()).build();
+		 final LambdaIntegration lambdaFetchIntegration = LambdaIntegration.Builder.create(ecommerceCommons.getProductsFetchFunction()).build();
 		 
 		 final Resource resource =  restApi.getRoot().addResource("products");
 		 resource.addMethod(HttpMethod.GET.toString(), lambdaFetchIntegration);
@@ -57,7 +57,7 @@ public class ApiGatewayProductStack  extends Stack {
 		 final Resource productIdResource = resource.addResource("{id}");
 		 productIdResource.addMethod(HttpMethod.GET.toString(), lambdaFetchIntegration);
 		 
-		 final LambdaIntegration lambdaAdminIntegration = LambdaIntegration.Builder.create(productCommonsStack.getProductsAdminFunction()).build();
+		 final LambdaIntegration lambdaAdminIntegration = LambdaIntegration.Builder.create(ecommerceCommons.getProductsAdminFunction()).build();
 		 
 		 resource.addMethod(HttpMethod.POST.toString(), lambdaAdminIntegration);
 		 productIdResource.addMethod(HttpMethod.PUT.toString(), lambdaAdminIntegration);

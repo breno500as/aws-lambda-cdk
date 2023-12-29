@@ -13,7 +13,6 @@ import software.amazon.awscdk.services.lambda.FunctionProps;
 import software.amazon.awscdk.services.lambda.ILayerVersion;
 import software.amazon.awscdk.services.lambda.LambdaInsightsVersion;
 import software.amazon.awscdk.services.lambda.LayerVersion;
-import software.amazon.awscdk.services.lambda.Runtime;
 import software.amazon.awscdk.services.lambda.Tracing;
 import software.amazon.awscdk.services.logs.RetentionDays;
 import software.amazon.awscdk.services.s3.assets.AssetOptions;
@@ -27,33 +26,25 @@ public class LambdaFunctionProductStack extends Stack implements DockerBuildStac
 	
 
 	private static final String PRODUCTS_DDB = "PRODUCTS_DDB";
-	
-	private static final String EVENTS_DDB = "EVENTS_DDB";
-	
  
-	
-	
-	public LambdaFunctionProductStack(final Construct scope, final String id, ProductCommons productCommonsStack, final StackProps props) {
+	public LambdaFunctionProductStack(final Construct scope, final String id, EcommerceCommons ecommerceCommons, final StackProps props) {
 		
 		   super(scope, id, props);
  
-		  
 		   
 		   final Map<String, String> environments = new HashMap<>();
+		   environments.put(LambdaFunctionEventsStack.PRODUCT_EVENTS_FUNCTION_NAME, LambdaFunctionEventsStack.EVENTS_FUNCTION_NAME);
 		   environments.put(PRODUCTS_DDB, DynamoDbStack.TABLE_PRODUCT);
-		   environments.put(EVENTS_DDB, EventsDynamoDbStack.TABLE_EVENTS);
-		   environments.put("POWERTOOLS_SERVICE_NAME", "Products XRAY tracing");
+		   environments.put(AwsLambdaCdkApp.POWERTOOLS_SERVICE_NAME, AwsLambdaCdkApp.POWERTOOLS_SERVICE_VALUE);
 		   
 		   
-		   final String productLayerArn = StringParameter.valueForStringParameter(this, LambdaLayersProductStack.PROJECT_LAYER_VERSION_ARN);
-		    
-		    ILayerVersion productLayer = LayerVersion.fromLayerVersionArn(this, LambdaLayersProductStack.PROJECT_LAYER_VERSION_ARN, productLayerArn);
+		   final String productLayerArn = StringParameter.valueForStringParameter(this, LambdaLayersStack.PRODUCTS_LAYER_VERSION_ARN);    
+		   final ILayerVersion productLayer = LayerVersion.fromLayerVersionArn(this, LambdaLayersStack.PRODUCTS_LAYER_VERSION_ARN, productLayerArn);
 		 
 		 
-		    
 		    // Função 1 - ProductsFetchFunction
-		    productCommonsStack.setProductsFetchFunction(new Function(this, "ProductsFetchFunction", FunctionProps.builder()
-	                .runtime(Runtime.JAVA_17)
+		    ecommerceCommons.setProductsFetchFunction(new Function(this, "ProductsFetchFunction", FunctionProps.builder()
+	                .runtime(AwsLambdaCdkApp.PROJECT_JAVA_RUNTIME)
 	                .functionName("ProductsFetchFunction")
 	                .code(Code.fromAsset("../" + AwsLambdaCdkApp.PROJECT_LAMBDA_FUNCTIONS_NAME + "/", AssetOptions.builder()
 	                        .bundling(getBundlingOptions(AwsLambdaCdkApp.PROJECT_LAMBDA_FUNCTIONS_NAME))
@@ -61,36 +52,17 @@ public class LambdaFunctionProductStack extends Stack implements DockerBuildStac
 	                .handler("com.br.aws.ecommerce.product.ProductsFetchFunction")
 	                .memorySize(512)
 	                .insightsVersion(LambdaInsightsVersion.VERSION_1_0_119_0)
-	                .timeout(Duration.seconds(10))
+	                .timeout(Duration.seconds(20))
 	                .tracing(Tracing.ACTIVE)
 	                .environment(environments)
 	                .layers(Arrays.asList(productLayer))
 	                .logRetention(RetentionDays.ONE_WEEK)
 	                .build()));
-		    
-		    /*
-		    productCommonsStack.setEventsFunction(new Function(this, "EventsFunction", FunctionProps.builder()
-	                .runtime(Runtime.JAVA_17)
-	                .functionName("EventsFunction")
-	                .code(Code.fromAsset("../" + AwsLambdaCdkApp.PROJECT_LAMBDA_FUNCTIONS_NAME + "/", AssetOptions.builder()
-	                        .bundling(getBundlingOptions(AwsLambdaCdkApp.PROJECT_LAMBDA_FUNCTIONS_NAME))
-	                        .build()))
-	                .handler("com.br.aws.ecommerce.product.ProductsFetchFunction")
-	                .memorySize(512)
-	                .tracing(Tracing.ACTIVE)
-	                .insightsVersion(LambdaInsightsVersion.VERSION_1_0_119_0)
-	                .timeout(Duration.seconds(10))
-	                .environment(environments)
-	                .logRetention(RetentionDays.ONE_WEEK)
-	                .build())); */
-		    
-		    
-		  
-		       
+		        
 	        
 	        // Função 2 - ProductsAdminFunction    
-		    productCommonsStack.setProductsAdminFunction(new Function(this, "ProductsAdminFunction", FunctionProps.builder()
-	                .runtime(Runtime.JAVA_17)
+		    ecommerceCommons.setProductsAdminFunction(new Function(this, "ProductsAdminFunction", FunctionProps.builder()
+	                .runtime(AwsLambdaCdkApp.PROJECT_JAVA_RUNTIME)
 	                .functionName("ProductsAdminFunction")
 	                .code(Code.fromAsset("../" + AwsLambdaCdkApp.PROJECT_LAMBDA_FUNCTIONS_NAME + "/", AssetOptions.builder()
 	                        .bundling(getBundlingOptions(AwsLambdaCdkApp.PROJECT_LAMBDA_FUNCTIONS_NAME))
@@ -99,7 +71,7 @@ public class LambdaFunctionProductStack extends Stack implements DockerBuildStac
 	                .memorySize(512)
 	                .environment(environments)
 	                .insightsVersion(LambdaInsightsVersion.VERSION_1_0_119_0)
-	                .timeout(Duration.seconds(10))
+	                .timeout(Duration.seconds(40))
 	                .logRetention(RetentionDays.ONE_WEEK)
 	                .tracing(Tracing.ACTIVE)
 	                .layers(Arrays.asList(productLayer))

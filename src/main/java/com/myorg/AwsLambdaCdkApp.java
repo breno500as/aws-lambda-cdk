@@ -26,7 +26,8 @@ public class AwsLambdaCdkApp {
 		App app = new App();
 
 		final Map<String, String> tags = new HashMap<String, String>();
-		tags.put("Ecommerce", "Ecommerce team");
+		tags.put("Team", "Developers");
+		tags.put("Cost", "Ecommerce");
 
 		final StackProps stackProps = StackProps.builder()
 				                                .tags(tags)

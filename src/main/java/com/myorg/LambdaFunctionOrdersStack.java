@@ -1,6 +1,5 @@
 package com.myorg;
 
- 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,33 +18,34 @@ import software.amazon.awscdk.services.s3.assets.AssetOptions;
 import software.amazon.awscdk.services.ssm.StringParameter;
 import software.constructs.Construct;
 
-public class LambdaFunctionEventsStack extends Stack implements DockerBuildStack {
+public class LambdaFunctionOrdersStack extends Stack implements DockerBuildStack {
 	
 	
-	public static final String EVENTS_FUNCTION_KEY = "PRODUCT_EVENTS_FUNCTION_NAME";
+	public static final String ORDERS_FUNCTION_KEY = "ORDERS_FUNCTION_NAME";
 	
-	public static final String EVENTS_FUNCTION_VALUE = "EventsFunction";
+	public static final String ORDERS_FUNCTION_VALUE = "OrdersFunction";
 	
 
-	public LambdaFunctionEventsStack(final Construct scope, final String id, EcommerceCommons ecommerceCommons, final StackProps props) {
+	public LambdaFunctionOrdersStack(final Construct scope, final String id, EcommerceCommons ecommerceCommons, final StackProps props) {
 		
 		       super(scope, id, props);
 		   
 			   final Map<String, String> environments = new HashMap<>();
 			 
-			   environments.put(DynamoDbStack.EVENTS_DDB, DynamoDbStack.TABLE_EVENT);
+			   environments.put(DynamoDbStack.ORDERS_DDB, DynamoDbStack.TABLE_ORDER);
+			   environments.put(DynamoDbStack.PRODUCTS_DDB, DynamoDbStack.TABLE_PRODUCT);
 			   environments.put(AwsLambdaCdkApp.POWERTOOLS_SERVICE_KEY, AwsLambdaCdkApp.POWERTOOLS_SERVICE_VALUE);
 			   
 			   final String ecommerceLayerArn = StringParameter.valueForStringParameter(this, LambdaLayersStack.ECOMMERCE_LAYER_VERSION_ARN);
 			    
 		   
-			   ecommerceCommons.setEventsFunction(new Function(this, EVENTS_FUNCTION_VALUE, FunctionProps.builder()
+			   ecommerceCommons.setOrdersFunction(new Function(this, ORDERS_FUNCTION_VALUE, FunctionProps.builder()
 	                .runtime(AwsLambdaCdkApp.PROJECT_JAVA_RUNTIME)
-	                .functionName(EVENTS_FUNCTION_VALUE)
+	                .functionName(ORDERS_FUNCTION_VALUE)
 	                .code(Code.fromAsset("../" + AwsLambdaCdkApp.PROJECT_LAMBDA_FUNCTIONS_NAME + "/", AssetOptions.builder()
 	                        .bundling(getBundlingOptions(AwsLambdaCdkApp.PROJECT_LAMBDA_FUNCTIONS_NAME))
 	                        .build()))
-	                .handler("com.br.aws.ecommerce.event.ProductEventFunction")
+	                .handler("com.br.aws.ecommerce.order.OrdersFunction")
 	                .memorySize(512)
 	                .tracing(Tracing.ACTIVE)
 	                .insightsVersion(LambdaInsightsVersion.VERSION_1_0_119_0)
@@ -54,9 +54,7 @@ public class LambdaFunctionEventsStack extends Stack implements DockerBuildStack
 	                .layers(Arrays.asList(LayerVersion.fromLayerVersionArn(this, LambdaLayersStack.ECOMMERCE_LAYER_VERSION_ARN, ecommerceLayerArn)))
 	                .logRetention(RetentionDays.ONE_WEEK)
 	                .build()));  
-			   
-			   ecommerceCommons.getEventsFunction().grantInvoke(ecommerceCommons.getProductsAdminFunction());
-			   
+			     
 		   
 	}
 

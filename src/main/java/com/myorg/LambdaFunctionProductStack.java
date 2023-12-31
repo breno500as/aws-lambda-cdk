@@ -25,7 +25,7 @@ import software.constructs.Construct;
 public class LambdaFunctionProductStack extends Stack implements DockerBuildStack {
 	
 
-	private static final String PRODUCTS_DDB = "PRODUCTS_DDB";
+	private static final String PRODUCTS_DDB_KEY = "PRODUCTS_DDB";
  
 	public LambdaFunctionProductStack(final Construct scope, final String id, EcommerceCommons ecommerceCommons, final StackProps props) {
 		
@@ -33,13 +33,13 @@ public class LambdaFunctionProductStack extends Stack implements DockerBuildStac
  
 		   
 		   final Map<String, String> environments = new HashMap<>();
-		   environments.put(LambdaFunctionEventsStack.PRODUCT_EVENTS_FUNCTION_NAME, LambdaFunctionEventsStack.EVENTS_FUNCTION_NAME);
-		   environments.put(PRODUCTS_DDB, DynamoDbStack.TABLE_PRODUCT);
-		   environments.put(AwsLambdaCdkApp.POWERTOOLS_SERVICE_NAME, AwsLambdaCdkApp.POWERTOOLS_SERVICE_VALUE);
+		   environments.put(LambdaFunctionEventsStack.EVENTS_FUNCTION_KEY, LambdaFunctionEventsStack.EVENTS_FUNCTION_VALUE);
+		   environments.put(PRODUCTS_DDB_KEY, DynamoDbStack.TABLE_PRODUCT);
+		   environments.put(AwsLambdaCdkApp.POWERTOOLS_SERVICE_KEY, AwsLambdaCdkApp.POWERTOOLS_SERVICE_VALUE);
 		   
 		   
-		   final String productLayerArn = StringParameter.valueForStringParameter(this, LambdaLayersStack.PRODUCTS_LAYER_VERSION_ARN);    
-		   final ILayerVersion productLayer = LayerVersion.fromLayerVersionArn(this, LambdaLayersStack.PRODUCTS_LAYER_VERSION_ARN, productLayerArn);
+		   final String ecommerceLayerArn = StringParameter.valueForStringParameter(this, LambdaLayersStack.ECOMMERCE_LAYER_VERSION_ARN);    
+		   final ILayerVersion ecommerceLayer = LayerVersion.fromLayerVersionArn(this, LambdaLayersStack.ECOMMERCE_LAYER_VERSION_ARN, ecommerceLayerArn);
 		 
 		 
 		    // Função 1 - ProductsFetchFunction
@@ -55,7 +55,7 @@ public class LambdaFunctionProductStack extends Stack implements DockerBuildStac
 	                .timeout(Duration.seconds(20))
 	                .tracing(Tracing.ACTIVE)
 	                .environment(environments)
-	                .layers(Arrays.asList(productLayer))
+	                .layers(Arrays.asList(ecommerceLayer))
 	                .logRetention(RetentionDays.ONE_WEEK)
 	                .build()));
 		        
@@ -74,7 +74,7 @@ public class LambdaFunctionProductStack extends Stack implements DockerBuildStac
 	                .timeout(Duration.seconds(40))
 	                .logRetention(RetentionDays.ONE_WEEK)
 	                .tracing(Tracing.ACTIVE)
-	                .layers(Arrays.asList(productLayer))
+	                .layers(Arrays.asList(ecommerceLayer))
 	                .build()));
 		
 	}

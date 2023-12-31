@@ -14,13 +14,17 @@ import software.constructs.Construct;
 
 public class DynamoDbStack  extends Stack {
 	
- 
+	public static final String PRODUCTS_DDB = "PRODUCTS_DDB";
 	
+	public static final String ORDERS_DDB = "ORDERS_DDB";
+
 	public static final String EVENTS_DDB = "EVENTS_DDB";
-	
+
 	public static final String TABLE_PRODUCT = "product";
-	
+
 	public static final String TABLE_EVENT = "event";
+
+	public static final String TABLE_ORDER = "order";
 	
 	
 	public DynamoDbStack(final Construct scope, final String id, EcommerceCommons ecommerceCommons, StackProps stackProps) {
@@ -28,6 +32,7 @@ public class DynamoDbStack  extends Stack {
 	
 		this.createProductTable(ecommerceCommons);
 	    this.createEventsTable(ecommerceCommons);
+	    this.createOrderTable(ecommerceCommons);
 		
 	}
 	
@@ -63,6 +68,7 @@ public class DynamoDbStack  extends Stack {
 		
 		productTable.grantReadData(ecommerceCommons.getProductsFetchFunction());
 		productTable.grantWriteData(ecommerceCommons.getProductsAdminFunction());
+		productTable.grantReadData(ecommerceCommons.getOrdersFunction());
 		
 
 	}
@@ -99,6 +105,40 @@ public class DynamoDbStack  extends Stack {
 				                                                               .build());
 		
 		eventsTable.grantWriteData(ecommerceCommons.getEventsFunction());
+	}
+	
+	private void createOrderTable(EcommerceCommons ecommerceCommons) {
+		
+		final Table orderTable = Table.Builder.create(this, "OrderTable")
+				.tableName(TABLE_ORDER)
+				.readCapacity(1)
+				.writeCapacity(1)
+				.billingMode(BillingMode.PROVISIONED)
+				.partitionKey(Attribute.builder().name("pk").type(AttributeType.STRING).build())
+				.sortKey(Attribute.builder().name("sk").type(AttributeType.STRING).build())
+				.timeToLiveAttribute("ttl")
+				.removalPolicy(RemovalPolicy.DESTROY).build();
+
+		orderTable.autoScaleReadCapacity(EnableScalingProps.builder()
+				                                      .minCapacity(1)
+				                                      .maxCapacity(4)
+				                                      .build())
+				          .scaleOnUtilization(UtilizationScalingProps.builder().targetUtilizationPercent(50)
+						                                                       .scaleInCooldown(Duration.seconds(30))
+						                                                       .scaleOutCooldown(Duration.seconds(30))
+						                                                       .build());
+		
+		
+		orderTable.autoScaleWriteCapacity(EnableScalingProps.builder()
+				                                                   .minCapacity(1)
+				                                                   .maxCapacity(4)
+				                                                   .build())
+		                  .scaleOnUtilization(UtilizationScalingProps.builder().targetUtilizationPercent(50)
+				                                                               .scaleInCooldown(Duration.seconds(30))
+				                                                               .scaleOutCooldown(Duration.seconds(30))
+				                                                               .build());
+		
+		orderTable.grantReadWriteData(ecommerceCommons.getOrdersFunction());
 	}
 
 }

@@ -118,6 +118,7 @@ public class DynamoDbStack  extends Stack {
 	
 	private void grantSpecifcActionTable(Table eventsTable, EcommerceCommons ecommerceCommons) {
 		
+		//Permissão de dar uma única ação de put item no dynamodb ao invés de dar permissão de escrita que libera várias ações
 		final Map<String,List<String>> fieldStringRestriction = new HashMap<String, List<String>>();
 		fieldStringRestriction.put("dynamodb:LeadingKeys", Arrays.asList("#order_*"));
 		
@@ -125,7 +126,7 @@ public class DynamoDbStack  extends Stack {
 		conditions.put("ForAllValues:StringLike", fieldStringRestriction);
 		
 	 
-		
+	
 		ecommerceCommons.getOrdersEventFunction().addToRolePolicy(PolicyStatement.Builder.create()
 				.effect(Effect.ALLOW)
 				.actions(Arrays.asList("dynamodb:PutItem"))

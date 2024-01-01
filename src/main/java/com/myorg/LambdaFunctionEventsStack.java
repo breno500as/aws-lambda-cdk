@@ -22,7 +22,7 @@ import software.constructs.Construct;
 public class LambdaFunctionEventsStack extends Stack implements DockerBuildStack {
 	
 	
-	public static final String EVENTS_FUNCTION_KEY = "PRODUCT_EVENTS_FUNCTION_NAME";
+	public static final String EVENTS_FUNCTION_KEY = "EVENTS_FUNCTION_KEY";
 	
 	public static final String EVENTS_FUNCTION_VALUE = "EventsFunction";
 	

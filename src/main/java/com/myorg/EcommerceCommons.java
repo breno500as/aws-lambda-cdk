@@ -14,6 +14,10 @@ public class EcommerceCommons {
 
 	private Function ordersEventFunction;
 
+	private Function ordersPaymentFunction;
+
+	private Function ordersEmailFunction;
+
 	public Function getProductsFetchFunction() {
 		return productsFetchFunction;
 	}
@@ -52,6 +56,22 @@ public class EcommerceCommons {
 
 	public void setOrdersEventFunction(Function ordersEventFunction) {
 		this.ordersEventFunction = ordersEventFunction;
+	}
+
+	public Function getOrdersPaymentFunction() {
+		return ordersPaymentFunction;
+	}
+
+	public void setOrdersPaymentFunction(Function ordersPaymentFunction) {
+		this.ordersPaymentFunction = ordersPaymentFunction;
+	}
+
+	public Function getOrdersEmailFunction() {
+		return ordersEmailFunction;
+	}
+
+	public void setOrdersEmailFunction(Function ordersEmailFunction) {
+		this.ordersEmailFunction = ordersEmailFunction;
 	}
 
 }

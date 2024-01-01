@@ -43,13 +43,13 @@ public class LambdaFunctionProductStack extends Stack implements DockerBuildStac
 		 
 		 
 		    // Função 1 - ProductsFetchFunction
-		    ecommerceCommons.setProductsFetchFunction(new Function(this, "ProductsFetchFunction", FunctionProps.builder()
+		    ecommerceCommons.setProductsFetchFunction(new Function(this, "ProductFetchFunction", FunctionProps.builder()
 	                .runtime(AwsLambdaCdkApp.PROJECT_JAVA_RUNTIME)
 	                .functionName("ProductsFetchFunction")
 	                .code(Code.fromAsset("../" + AwsLambdaCdkApp.PROJECT_LAMBDA_FUNCTIONS_NAME + "/", AssetOptions.builder()
 	                        .bundling(getBundlingOptions(AwsLambdaCdkApp.PROJECT_LAMBDA_FUNCTIONS_NAME))
 	                        .build()))
-	                .handler("com.br.aws.ecommerce.product.ProductsFetchFunction")
+	                .handler("com.br.aws.ecommerce.product.ProductFetchFunction")
 	                .memorySize(512)
 	                .insightsVersion(LambdaInsightsVersion.VERSION_1_0_119_0)
 	                .timeout(Duration.seconds(20))
@@ -61,13 +61,13 @@ public class LambdaFunctionProductStack extends Stack implements DockerBuildStac
 		        
 	        
 	        // Função 2 - ProductsAdminFunction    
-		    ecommerceCommons.setProductsAdminFunction(new Function(this, "ProductsAdminFunction", FunctionProps.builder()
+		    ecommerceCommons.setProductsAdminFunction(new Function(this, "ProductAdminFunction", FunctionProps.builder()
 	                .runtime(AwsLambdaCdkApp.PROJECT_JAVA_RUNTIME)
 	                .functionName("ProductsAdminFunction")
 	                .code(Code.fromAsset("../" + AwsLambdaCdkApp.PROJECT_LAMBDA_FUNCTIONS_NAME + "/", AssetOptions.builder()
 	                        .bundling(getBundlingOptions(AwsLambdaCdkApp.PROJECT_LAMBDA_FUNCTIONS_NAME))
 	                        .build()))
-	                .handler("com.br.aws.ecommerce.product.ProductsAdminFunction")
+	                .handler("com.br.aws.ecommerce.product.ProductAdminFunction")
 	                .memorySize(512)
 	                .environment(environments)
 	                .insightsVersion(LambdaInsightsVersion.VERSION_1_0_119_0)

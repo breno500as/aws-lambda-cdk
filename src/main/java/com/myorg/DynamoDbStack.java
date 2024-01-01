@@ -1,5 +1,10 @@
 package com.myorg;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import software.amazon.awscdk.Duration;
 import software.amazon.awscdk.RemovalPolicy;
 import software.amazon.awscdk.Stack;
@@ -10,6 +15,8 @@ import software.amazon.awscdk.services.dynamodb.BillingMode;
 import software.amazon.awscdk.services.dynamodb.EnableScalingProps;
 import software.amazon.awscdk.services.dynamodb.Table;
 import software.amazon.awscdk.services.dynamodb.UtilizationScalingProps;
+import software.amazon.awscdk.services.iam.Effect;
+import software.amazon.awscdk.services.iam.PolicyStatement;
 import software.constructs.Construct;
 
 public class DynamoDbStack  extends Stack {
@@ -105,6 +112,27 @@ public class DynamoDbStack  extends Stack {
 				                                                               .build());
 		
 		eventsTable.grantWriteData(ecommerceCommons.getEventsFunction());
+		this.grantSpecifcActionTable(eventsTable, ecommerceCommons);
+		
+	}
+	
+	private void grantSpecifcActionTable(Table eventsTable, EcommerceCommons ecommerceCommons) {
+		
+		final Map<String,List<String>> fieldStringRestriction = new HashMap<String, List<String>>();
+		fieldStringRestriction.put("dynamodb:LeadingKeys", Arrays.asList("#order_*"));
+		
+		final Map<String, Map<String,List<String>>> conditions = new HashMap<>();
+		conditions.put("ForAllValues:StringLike", fieldStringRestriction);
+		
+	 
+		
+		ecommerceCommons.getOrdersEventFunction().addToRolePolicy(PolicyStatement.Builder.create()
+				.effect(Effect.ALLOW)
+				.actions(Arrays.asList("dynamodb:PutItem"))
+				.resources(Arrays.asList(eventsTable.getTableArn()))
+				.conditions(conditions)
+				.build());
+		
 	}
 	
 	private void createOrderTable(EcommerceCommons ecommerceCommons) {

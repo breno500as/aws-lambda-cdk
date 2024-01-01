@@ -9,8 +9,10 @@ public class EcommerceCommons {
 	private Function productsAdminFunction;
 
 	private Function eventsFunction;
-	
+
 	private Function ordersFunction;
+
+	private Function ordersEventFunction;
 
 	public Function getProductsFetchFunction() {
 		return productsFetchFunction;
@@ -35,13 +37,21 @@ public class EcommerceCommons {
 	public void setEventsFunction(Function eventsFunction) {
 		this.eventsFunction = eventsFunction;
 	}
-	
+
 	public Function getOrdersFunction() {
 		return ordersFunction;
 	}
-	
+
 	public void setOrdersFunction(Function ordersFunction) {
 		this.ordersFunction = ordersFunction;
+	}
+
+	public Function getOrdersEventFunction() {
+		return ordersEventFunction;
+	}
+
+	public void setOrdersEventFunction(Function ordersEventFunction) {
+		this.ordersEventFunction = ordersEventFunction;
 	}
 
 }

@@ -49,6 +49,10 @@ public class LambdaFunctionOrdersStack extends Stack implements DockerBuildStack
 	public static final String ORDERS_EMAIL_FUNCTION_KEY = "ORDERS_EMAIL_FUNCTION_KEY";
 	
 	public static final String ORDERS_EMAIL_FUNCTION_VALUE = "OrdersEmailFunction";
+	
+	public static final String ORDERS_EVENT_FETCH_FUNCTION_KEY = "ORDERS_EVENT_FETCH_FUNCTION_KEY";
+	
+	public static final String ORDERS_EVENT_FETCH_FUNCTION_VALUE = "OrdersEventFetchFunction";
  
 	public LambdaFunctionOrdersStack(final Construct scope, final String id, EcommerceCommons ecommerceCommons, final StackProps props) {
 		
@@ -165,6 +169,22 @@ public class LambdaFunctionOrdersStack extends Stack implements DockerBuildStack
 	                        .bundling(getBundlingOptions(AwsLambdaCdkApp.PROJECT_LAMBDA_FUNCTIONS_NAME))
 	                        .build()))
 	                .handler("com.br.aws.ecommerce.order.OrderEventFunction")
+	                .memorySize(512)
+	                .tracing(Tracing.ACTIVE)
+	                .insightsVersion(LambdaInsightsVersion.VERSION_1_0_119_0)
+	                .timeout(Duration.seconds(20))
+	                .environment(environments)
+	                .layers(Arrays.asList(ecommerceLayer))
+	                .logRetention(RetentionDays.ONE_WEEK)
+	                .build()));
+		   
+		   ecommerceCommons.setOrdersEventFetchFunction(new Function(this, ORDERS_EVENT_FETCH_FUNCTION_VALUE, FunctionProps.builder()
+	                .runtime(AwsLambdaCdkApp.PROJECT_JAVA_RUNTIME)
+	                .functionName(ORDERS_EVENT_FETCH_FUNCTION_VALUE)
+	                .code(Code.fromAsset("../" + AwsLambdaCdkApp.PROJECT_LAMBDA_FUNCTIONS_NAME + "/", AssetOptions.builder()
+	                        .bundling(getBundlingOptions(AwsLambdaCdkApp.PROJECT_LAMBDA_FUNCTIONS_NAME))
+	                        .build()))
+	                .handler("com.br.aws.ecommerce.event.OrderEventFetchFunction")
 	                .memorySize(512)
 	                .tracing(Tracing.ACTIVE)
 	                .insightsVersion(LambdaInsightsVersion.VERSION_1_0_119_0)

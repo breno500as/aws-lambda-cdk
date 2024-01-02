@@ -13,6 +13,8 @@ public class EcommerceCommons {
 	private Function ordersFunction;
 
 	private Function ordersEventFunction;
+	
+	private Function ordersEventFetchFunction;
 
 	private Function ordersPaymentFunction;
 
@@ -72,6 +74,14 @@ public class EcommerceCommons {
 
 	public void setOrdersEmailFunction(Function ordersEmailFunction) {
 		this.ordersEmailFunction = ordersEmailFunction;
+	}
+	
+	public Function getOrdersEventFetchFunction() {
+		return ordersEventFetchFunction;
+	}
+	
+	public void setOrdersEventFetchFunction(Function ordersEventFetchFunction) {
+		this.ordersEventFetchFunction = ordersEventFetchFunction;
 	}
 
 }

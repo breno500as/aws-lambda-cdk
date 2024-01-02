@@ -68,12 +68,7 @@ public class ApiGatewayStack  extends Stack {
 		 this.createApiProducts(ecommerceCommons, restApi);
 		 this.createApiOrders(ecommerceCommons, restApi);
 		 
-		 
-		// Exporta como parâmetro a url do API Gateway
-		//  new CfnOutput(this, "HttApiProductsFetch", CfnOutputProps.builder()
-		//           .description("Url for Http Api Products Ecommerce")
-		 //           .value(restApi.getUrl())
-		  //          .build()); 
+ 
  
 	}
 	
@@ -102,7 +97,7 @@ public class ApiGatewayStack  extends Stack {
 		 final LambdaIntegration lambdaOrderIntegration = LambdaIntegration.Builder.create(ecommerceCommons.getOrdersFunction()).build();
 		 final Resource orderResource =  restApi.getRoot().addResource("orders");
 		 
-		 Map<String, Boolean> requiredParameters = new HashMap<>();
+		 final Map<String, Boolean> requiredParameters = new HashMap<>();
 		 requiredParameters.put("method.request.querystring.email", true);
 		 requiredParameters.put("method.request.querystring.orderId", true);
 		 
@@ -156,6 +151,36 @@ public class ApiGatewayStack  extends Stack {
 		 orderResource.addMethod(HttpMethod.DELETE.toString(), lambdaOrderIntegration, MethodOptions.builder().requestParameters(requiredParameters)
 				 .requestValidator(deleteValidators).build());
 		 orderResource.addMethod(HttpMethod.GET.toString(), lambdaOrderIntegration);
+		 
+		 this.createApiOrdersEventsFetch(ecommerceCommons, restApi, orderResource);
+		 
+		 
+		 
+		
+	}
+	
+	private void createApiOrdersEventsFetch(EcommerceCommons ecommerceCommons, RestApi restApi,  final Resource orderResource) {
+		
+		final Resource eventResource =  orderResource.addResource("events");
+		
+		
+		 final LambdaIntegration lambdaOrderEventsFetchIntegration = LambdaIntegration.Builder.create(ecommerceCommons.getOrdersEventFetchFunction()).build();
+		
+		 final Map<String, Boolean> requiredParameters = new HashMap<>();
+		 requiredParameters.put("method.request.querystring.email", true);
+		 requiredParameters.put("method.request.querystring.eventType", false);
+		 
+		 final IRequestValidator requestValidators = new RequestValidator(this, "OrderEventFetchValidator",
+					RequestValidatorProps.builder()
+					.requestValidatorName("OrderEventFetchValidator")
+					.restApi(restApi)
+					.validateRequestParameters(true)
+					.build());
+			
+			
+		  eventResource.addMethod(HttpMethod.GET.toString(), lambdaOrderEventsFetchIntegration, MethodOptions.builder().requestParameters(requiredParameters)
+					 .requestValidator(requestValidators).build());
+		 
 		
 	}
 	

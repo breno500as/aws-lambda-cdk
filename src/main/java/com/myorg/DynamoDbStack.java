@@ -13,6 +13,8 @@ import software.amazon.awscdk.services.dynamodb.Attribute;
 import software.amazon.awscdk.services.dynamodb.AttributeType;
 import software.amazon.awscdk.services.dynamodb.BillingMode;
 import software.amazon.awscdk.services.dynamodb.EnableScalingProps;
+import software.amazon.awscdk.services.dynamodb.GlobalSecondaryIndexProps;
+import software.amazon.awscdk.services.dynamodb.ProjectionType;
 import software.amazon.awscdk.services.dynamodb.Table;
 import software.amazon.awscdk.services.dynamodb.UtilizationScalingProps;
 import software.amazon.awscdk.services.iam.Effect;
@@ -111,14 +113,22 @@ public class DynamoDbStack  extends Stack {
 				                                                               .scaleOutCooldown(Duration.seconds(30))
 				                                                               .build());
 		
+		eventsTable.addGlobalSecondaryIndex(GlobalSecondaryIndexProps.builder()
+				.indexName("emailIndex")
+				.partitionKey(Attribute.builder().name("email").type(AttributeType.STRING).build())
+				.sortKey(Attribute.builder().name("sk").type(AttributeType.STRING).build())
+				.projectionType(ProjectionType.ALL).build());
+		
 		eventsTable.grantWriteData(ecommerceCommons.getEventsFunction());
-		this.grantSpecifcActionTable(eventsTable, ecommerceCommons);
+		
+		
+		this.grantPutItemAndQueryActionTable(eventsTable, ecommerceCommons);
 		
 	}
 	
-	private void grantSpecifcActionTable(Table eventsTable, EcommerceCommons ecommerceCommons) {
+	private void grantPutItemAndQueryActionTable(Table eventsTable, EcommerceCommons ecommerceCommons) {
 		
-		//Permissão de dar uma única ação de put item no dynamodb ao invés de dar permissão de escrita que libera várias ações
+		// Permissão de dar uma única ação de put item no dynamodb ao invés de dar permissão de escrita que libera várias ações
 		final Map<String,List<String>> fieldStringRestriction = new HashMap<String, List<String>>();
 		fieldStringRestriction.put("dynamodb:LeadingKeys", Arrays.asList("#order_*"));
 		
@@ -132,6 +142,14 @@ public class DynamoDbStack  extends Stack {
 				.actions(Arrays.asList("dynamodb:PutItem"))
 				.resources(Arrays.asList(eventsTable.getTableArn()))
 				.conditions(conditions)
+				.build());
+		
+		
+		// Permissão para que a função faça apenas query utilizando um index específico
+		ecommerceCommons.getOrdersEventFetchFunction().addToRolePolicy(PolicyStatement.Builder.create()
+				.effect(Effect.ALLOW)
+				.actions(Arrays.asList("dynamodb:Query"))
+				.resources(Arrays.asList(eventsTable.getTableArn() + "/index/emailIndex"))
 				.build());
 		
 	}

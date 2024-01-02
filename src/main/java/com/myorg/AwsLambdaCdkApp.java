@@ -56,6 +56,8 @@ public class AwsLambdaCdkApp {
 	 	apiGatewayStack.addDependency(lambdaFunctionOrderStack);
 		
 	 	new DynamoDbStack(app, "DynamoDbStack", ecommerceCommons, stackProps);
+	 	
+	 	final InvoiceStack InvoiceStack = new InvoiceStack(app, "InvoiceStack", stackProps);
 		 
 
 		app.synth();

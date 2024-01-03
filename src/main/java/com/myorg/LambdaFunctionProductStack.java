@@ -25,7 +25,7 @@ import software.constructs.Construct;
 public class LambdaFunctionProductStack extends Stack implements DockerBuildStack {
 	
 
-	private static final String PRODUCTS_DDB_KEY = "PRODUCTS_DDB";
+
  
 	public LambdaFunctionProductStack(final Construct scope, final String id, EcommerceCommons ecommerceCommons, final StackProps props) {
 		
@@ -34,7 +34,7 @@ public class LambdaFunctionProductStack extends Stack implements DockerBuildStac
 		   
 		   final Map<String, String> environments = new HashMap<>();
 		   environments.put(LambdaFunctionEventsStack.EVENTS_FUNCTION_KEY, LambdaFunctionEventsStack.EVENTS_FUNCTION_VALUE);
-		   environments.put(PRODUCTS_DDB_KEY, DynamoDbStack.TABLE_PRODUCT);
+		   environments.put(DynamoDbStack.PRODUCTS_DDB, DynamoDbStack.TABLE_PRODUCT);
 		   environments.put(AwsLambdaCdkApp.POWERTOOLS_SERVICE_KEY, AwsLambdaCdkApp.POWERTOOLS_SERVICE_VALUE);
 		   
 		   
@@ -50,7 +50,7 @@ public class LambdaFunctionProductStack extends Stack implements DockerBuildStac
 	                        .bundling(getBundlingOptions(AwsLambdaCdkApp.PROJECT_LAMBDA_FUNCTIONS_NAME))
 	                        .build()))
 	                .handler("com.br.aws.ecommerce.product.ProductFetchFunction")
-	                .memorySize(512)
+	                .memorySize(256)
 	                .insightsVersion(LambdaInsightsVersion.VERSION_1_0_119_0)
 	                .timeout(Duration.seconds(20))
 	                .tracing(Tracing.ACTIVE)
@@ -68,7 +68,7 @@ public class LambdaFunctionProductStack extends Stack implements DockerBuildStac
 	                        .bundling(getBundlingOptions(AwsLambdaCdkApp.PROJECT_LAMBDA_FUNCTIONS_NAME))
 	                        .build()))
 	                .handler("com.br.aws.ecommerce.product.ProductAdminFunction")
-	                .memorySize(512)
+	                .memorySize(256)
 	                .environment(environments)
 	                .insightsVersion(LambdaInsightsVersion.VERSION_1_0_119_0)
 	                .timeout(Duration.seconds(40))

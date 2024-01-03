@@ -39,7 +39,7 @@ public class InvoiceStack extends Stack implements DockerBuildStack {
 	
 	private static final String TABLE_INVOICE = "invoice";
 	
-	private static final String INVOICE_DDB_KEY = "INVOICE_DDB_KEY";
+	private static final String INVOICE_DDB = "INVOICE_DDB";
 	
 	private static final  String S3_BUCKET_KEY = "S3_BUCKET_KEY";
 	
@@ -50,7 +50,7 @@ public class InvoiceStack extends Stack implements DockerBuildStack {
 		super(scope, id, stackProps);
 		
 		 final Map<String, String> environments = new HashMap<>();
-		 environments.put(INVOICE_DDB_KEY, TABLE_INVOICE);
+		 environments.put(INVOICE_DDB, TABLE_INVOICE);
 		
  
 		final Table invoiceTable = Table.Builder.create(this, "InvoiceTable")
@@ -78,8 +78,8 @@ public class InvoiceStack extends Stack implements DockerBuildStack {
 		   environments.put(S3_BUCKET_KEY, bucket.getBucketName());
 		   
 		   // Recupera a layer ecommerce para ser vinculada as funções
-		   final String ecommerceLayerArn = StringParameter.valueForStringParameter(this, LambdaLayersStack.ECOMMERCE_LAYER_VERSION_ARN);
-		   final ILayerVersion ecommerceLayer = LayerVersion.fromLayerVersionArn(this, LambdaLayersStack.ECOMMERCE_LAYER_VERSION_ARN, ecommerceLayerArn);
+		  final String ecommerceLayerArn = StringParameter.valueForStringParameter(this, LambdaLayersStack.ECOMMERCE_LAYER_VERSION_ARN);
+		  final ILayerVersion ecommerceLayer = LayerVersion.fromLayerVersionArn(this, LambdaLayersStack.ECOMMERCE_LAYER_VERSION_ARN, ecommerceLayerArn);
 		
 		  final Function invoiceConnectionFunction =  new Function(this, "InvoiceConnectionFunction", FunctionProps.builder()
 	                .runtime(AwsLambdaCdkApp.PROJECT_JAVA_RUNTIME)
@@ -108,9 +108,30 @@ public class InvoiceStack extends Stack implements DockerBuildStack {
 	                .logRetention(RetentionDays.ONE_WEEK)
 	                .build());
 		  
+		  
+		  final Function invoiceDefaultFunction = new Function(this, "InvoiceDefaultFunction", FunctionProps.builder()
+	                .runtime(AwsLambdaCdkApp.PROJECT_JAVA_RUNTIME)
+	                .functionName("InvoiceDefaultFunction")
+	                .code(Code.fromAsset("../" + AwsLambdaCdkApp.PROJECT_LAMBDA_FUNCTIONS_NAME + "/", AssetOptions.builder()
+	                        .bundling(getBundlingOptions(AwsLambdaCdkApp.PROJECT_LAMBDA_FUNCTIONS_NAME))
+	                        .build()))
+	                .handler("com.br.aws.ecommerce.invoice.InvoiceDefaultFunction")
+	                .memorySize(256)
+	                .tracing(Tracing.ACTIVE)
+	                .timeout(Duration.seconds(30))
+	                .logRetention(RetentionDays.ONE_WEEK)
+	                .build());
+		  
+		  
 		  final WebSocketApi invoiceWebSocketApi = new WebSocketApi(this, "ecommerce-websocket-apigateway", 
 				  WebSocketApiProps.builder()
 				  .apiName("ecommerce-websocket-apigateway")
+				  
+				  .defaultRouteOptions(WebSocketRouteOptions
+						  .builder()
+						  .integration(new WebSocketLambdaIntegration("DefaultHandler", invoiceDefaultFunction))
+						  .build())
+				  
 				  .connectRouteOptions(WebSocketRouteOptions
 						  .builder()
 						  .integration(new WebSocketLambdaIntegration("ConnectionHandler", invoiceConnectionFunction))
@@ -140,7 +161,7 @@ public class InvoiceStack extends Stack implements DockerBuildStack {
 	                        .bundling(getBundlingOptions(AwsLambdaCdkApp.PROJECT_LAMBDA_FUNCTIONS_NAME))
 	                        .build()))
 	                .handler("com.br.aws.ecommerce.invoice.InvoiceGetUrlFunction")
-	                .memorySize(512)
+	                .memorySize(256)
 	                .environment(environments)
 	                .insightsVersion(LambdaInsightsVersion.VERSION_1_0_119_0)
 	                .layers(Arrays.asList(ecommerceLayer))
@@ -167,7 +188,7 @@ public class InvoiceStack extends Stack implements DockerBuildStack {
 	                        .bundling(getBundlingOptions(AwsLambdaCdkApp.PROJECT_LAMBDA_FUNCTIONS_NAME))
 	                        .build()))
 	                .handler("com.br.aws.ecommerce.invoice.InvoiceImportFunction")
-	                .memorySize(512)
+	                .memorySize(256)
 	                .environment(environments)
 	                .insightsVersion(LambdaInsightsVersion.VERSION_1_0_119_0)
 	                .layers(Arrays.asList(ecommerceLayer))
@@ -197,7 +218,7 @@ public class InvoiceStack extends Stack implements DockerBuildStack {
 	                        .bundling(getBundlingOptions(AwsLambdaCdkApp.PROJECT_LAMBDA_FUNCTIONS_NAME))
 	                        .build()))
 	                .handler("com.br.aws.ecommerce.invoice.InvoiceCancelImportFunction")
-	                .memorySize(512)
+	                .memorySize(256)
 	                .environment(environments)
 	                .insightsVersion(LambdaInsightsVersion.VERSION_1_0_119_0)
 	                .layers(Arrays.asList(ecommerceLayer))
@@ -208,7 +229,11 @@ public class InvoiceStack extends Stack implements DockerBuildStack {
 		  
 		  invoiceWebSocketApi.grantManageConnections(invoiceCancelImportFunction);
 		  
+		  invoiceWebSocketApi.grantManageConnections(invoiceDefaultFunction);
+		  
 		  invoiceTable.grantReadWriteData(invoiceCancelImportFunction);
+		  
+ 
 		  
 		  // Web Socket API Routes
 	      invoiceWebSocketApi.addRoute("getImportUrl", WebSocketRouteOptions.builder()

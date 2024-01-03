@@ -46,7 +46,7 @@ public class LambdaFunctionEventsStack extends Stack implements DockerBuildStack
 	                        .bundling(getBundlingOptions(AwsLambdaCdkApp.PROJECT_LAMBDA_FUNCTIONS_NAME))
 	                        .build()))
 	                .handler("com.br.aws.ecommerce.event.ProductEventFunction")
-	                .memorySize(512)
+	                .memorySize(256)
 	                .tracing(Tracing.ACTIVE)
 	                .insightsVersion(LambdaInsightsVersion.VERSION_1_0_119_0)
 	                .timeout(Duration.seconds(20))

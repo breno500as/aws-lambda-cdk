@@ -41,23 +41,19 @@ public class AwsLambdaCdkApp {
 		
 		final LambdaLayersStack ecommerceLayersStack = new LambdaLayersStack(app, "LambdaLayersStack", stackProps);
 
-		final LambdaFunctionProductStack lambdaFunctionProductStack = new LambdaFunctionProductStack(app,
-				"LambdaFunctionProductStack", ecommerceCommons, stackProps);
-		lambdaFunctionProductStack.addDependency(ecommerceLayersStack);
-				
-		final LambdaFunctionEventsStack lambdaFunctionEventsStack = new LambdaFunctionEventsStack(app, "LambdaFunctionEventsStack", ecommerceCommons, stackProps);
-		lambdaFunctionEventsStack.addDependency(ecommerceLayersStack);
+		final ProductStack productStack = new ProductStack(app, "ProductStack", ecommerceCommons, stackProps);
+		productStack.addDependency(ecommerceLayersStack);
 		
-		final LambdaFunctionOrdersStack lambdaFunctionOrderStack = new LambdaFunctionOrdersStack(app, "LambdaFunctionOrdersStack", ecommerceCommons, stackProps);
-		lambdaFunctionOrderStack.addDependency(ecommerceLayersStack);
+		final OrderStack orderStack = new OrderStack(app, "OrderStack", ecommerceCommons, stackProps);
+		orderStack.addDependency(ecommerceLayersStack);
 		
 		final ApiGatewayStack apiGatewayStack = new ApiGatewayStack(app, "ApiGatewayStack",ecommerceCommons, stackProps);
-	 	apiGatewayStack.addDependency(lambdaFunctionProductStack);
-	 	apiGatewayStack.addDependency(lambdaFunctionOrderStack);
+	 	apiGatewayStack.addDependency(productStack);
+	 	apiGatewayStack.addDependency(orderStack);
 		
 	 	new DynamoDbStack(app, "DynamoDbStack", ecommerceCommons, stackProps);
 	 	
-	 	final InvoiceStack InvoiceStack = new InvoiceStack(app, "InvoiceStack", stackProps);
+	 	new InvoiceStack(app, "InvoiceStack", stackProps);
 		 
 
 		app.synth();

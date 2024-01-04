@@ -8,12 +8,12 @@ public class EcommerceCommons {
 
 	private Function productsAdminFunction;
 
-	private Function eventsFunction;
+	private Function productEventFunction;
 
 	private Function ordersFunction;
 
 	private Function ordersEventFunction;
-	
+
 	private Function ordersEventFetchFunction;
 
 	private Function ordersPaymentFunction;
@@ -36,12 +36,12 @@ public class EcommerceCommons {
 		this.productsAdminFunction = productsAdminFunction;
 	}
 
-	public Function getEventsFunction() {
-		return eventsFunction;
+	public Function getProductEventFunction() {
+		return productEventFunction;
 	}
 
-	public void setEventsFunction(Function eventsFunction) {
-		this.eventsFunction = eventsFunction;
+	public void setProductEventFunction(Function productEventFunction) {
+		this.productEventFunction = productEventFunction;
 	}
 
 	public Function getOrdersFunction() {
@@ -75,11 +75,11 @@ public class EcommerceCommons {
 	public void setOrdersEmailFunction(Function ordersEmailFunction) {
 		this.ordersEmailFunction = ordersEmailFunction;
 	}
-	
+
 	public Function getOrdersEventFetchFunction() {
 		return ordersEventFetchFunction;
 	}
-	
+
 	public void setOrdersEventFetchFunction(Function ordersEventFetchFunction) {
 		this.ordersEventFetchFunction = ordersEventFetchFunction;
 	}

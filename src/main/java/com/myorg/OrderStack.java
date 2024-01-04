@@ -31,30 +31,20 @@ import software.amazon.awscdk.services.sqs.QueueEncryption;
 import software.amazon.awscdk.services.ssm.StringParameter;
 import software.constructs.Construct;
 
-public class LambdaFunctionOrdersStack extends Stack implements DockerBuildStack {
+public class OrderStack extends Stack implements DockerBuildStack {
 	
-	
-	public static final String ORDERS_FUNCTION_KEY = "ORDERS_FUNCTION_KEY";
 	
 	public static final String ORDERS_FUNCTION_VALUE = "OrdersFunction";
 	
-	public static final String ORDERS_EVENT_FUNCTION_KEY = "ORDERS_EVENT_FUNCTION_KEY";
-	
 	public static final String ORDERS_EVENT_FUNCTION_VALUE = "OrdersEventFunction";
-	
-	public static final String ORDERS_PAYMENT_FUNCTION_KEY = "ORDERS_PAYMENT_FUNCTION_KEY";
 	
 	public static final String ORDERS_PAYMENT_FUNCTION_VALUE = "OrdersPaymentFunction";
 	
-	public static final String ORDERS_EMAIL_FUNCTION_KEY = "ORDERS_EMAIL_FUNCTION_KEY";
-	
 	public static final String ORDERS_EMAIL_FUNCTION_VALUE = "OrdersEmailFunction";
-	
-	public static final String ORDERS_EVENT_FETCH_FUNCTION_KEY = "ORDERS_EVENT_FETCH_FUNCTION_KEY";
 	
 	public static final String ORDERS_EVENT_FETCH_FUNCTION_VALUE = "OrdersEventFetchFunction";
  
-	public LambdaFunctionOrdersStack(final Construct scope, final String id, EcommerceCommons ecommerceCommons, final StackProps props) {
+	public OrderStack(final Construct scope, final String id, EcommerceCommons ecommerceCommons, final StackProps props) {
 		
 		       super(scope, id, props);
 		       
@@ -137,6 +127,7 @@ public class LambdaFunctionOrdersStack extends Stack implements DockerBuildStack
 		   // Passa variáveis de ambiente para as funções
 		   final Map<String, String> environments = new HashMap<>();
 		   environments.put(DynamoDbStack.ORDERS_DDB, DynamoDbStack.TABLE_ORDER);
+		   environments.put(DynamoDbStack.EVENTS_DDB, DynamoDbStack.TABLE_EVENT);
 		   environments.put(DynamoDbStack.PRODUCTS_DDB, DynamoDbStack.TABLE_PRODUCT);
 		   environments.put(AwsLambdaCdkApp.POWERTOOLS_SERVICE_KEY, AwsLambdaCdkApp.POWERTOOLS_SERVICE_VALUE);
 		   environments.put("ORDER_EVENTS_TOPIC_ARN", orderEventSnsTopic.getTopic().getTopicArn());

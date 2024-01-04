@@ -22,18 +22,27 @@ import software.constructs.Construct;
 
 
 
-public class LambdaFunctionProductStack extends Stack implements DockerBuildStack {
+public class ProductStack extends Stack implements DockerBuildStack {
 	
 
+	public static final String PRODUCT_EVENT_FUNCTION_KEY = "PRODUCT_EVENT_FUNCTION_KEY";
+	
+	public static final String PRODUCT_EVENT_FUNCTION_VALUE = "ProductEventFunction";
+	
+	public static final String PRODUCT_FETCH_FUNCTION_VALUE = "ProductFetchFunction";
+	
+	public static final String PRODUCT_ADMIN_FUNCTION_VALUE = "ProductAdminFunction";
+	
 
  
-	public LambdaFunctionProductStack(final Construct scope, final String id, EcommerceCommons ecommerceCommons, final StackProps props) {
+	public ProductStack(final Construct scope, final String id, EcommerceCommons ecommerceCommons, final StackProps props) {
 		
 		   super(scope, id, props);
  
 		   
 		   final Map<String, String> environments = new HashMap<>();
-		   environments.put(LambdaFunctionEventsStack.EVENTS_FUNCTION_KEY, LambdaFunctionEventsStack.EVENTS_FUNCTION_VALUE);
+		   environments.put(DynamoDbStack.EVENTS_DDB, DynamoDbStack.TABLE_EVENT);
+		   environments.put(PRODUCT_EVENT_FUNCTION_KEY, PRODUCT_EVENT_FUNCTION_VALUE);
 		   environments.put(DynamoDbStack.PRODUCTS_DDB, DynamoDbStack.TABLE_PRODUCT);
 		   environments.put(AwsLambdaCdkApp.POWERTOOLS_SERVICE_KEY, AwsLambdaCdkApp.POWERTOOLS_SERVICE_VALUE);
 		   
@@ -43,9 +52,9 @@ public class LambdaFunctionProductStack extends Stack implements DockerBuildStac
 		 
 		 
 		    // Função 1 - ProductsFetchFunction
-		    ecommerceCommons.setProductsFetchFunction(new Function(this, "ProductFetchFunction", FunctionProps.builder()
+		    ecommerceCommons.setProductsFetchFunction(new Function(this, PRODUCT_FETCH_FUNCTION_VALUE, FunctionProps.builder()
 	                .runtime(AwsLambdaCdkApp.PROJECT_JAVA_RUNTIME)
-	                .functionName("ProductsFetchFunction")
+	                .functionName(PRODUCT_FETCH_FUNCTION_VALUE)
 	                .code(Code.fromAsset("../" + AwsLambdaCdkApp.PROJECT_LAMBDA_FUNCTIONS_NAME + "/", AssetOptions.builder()
 	                        .bundling(getBundlingOptions(AwsLambdaCdkApp.PROJECT_LAMBDA_FUNCTIONS_NAME))
 	                        .build()))
@@ -61,9 +70,9 @@ public class LambdaFunctionProductStack extends Stack implements DockerBuildStac
 		        
 	        
 	        // Função 2 - ProductsAdminFunction    
-		    ecommerceCommons.setProductsAdminFunction(new Function(this, "ProductAdminFunction", FunctionProps.builder()
+		    ecommerceCommons.setProductsAdminFunction(new Function(this, PRODUCT_ADMIN_FUNCTION_VALUE, FunctionProps.builder()
 	                .runtime(AwsLambdaCdkApp.PROJECT_JAVA_RUNTIME)
-	                .functionName("ProductsAdminFunction")
+	                .functionName(PRODUCT_ADMIN_FUNCTION_VALUE)
 	                .code(Code.fromAsset("../" + AwsLambdaCdkApp.PROJECT_LAMBDA_FUNCTIONS_NAME + "/", AssetOptions.builder()
 	                        .bundling(getBundlingOptions(AwsLambdaCdkApp.PROJECT_LAMBDA_FUNCTIONS_NAME))
 	                        .build()))
@@ -76,6 +85,26 @@ public class LambdaFunctionProductStack extends Stack implements DockerBuildStac
 	                .tracing(Tracing.ACTIVE)
 	                .layers(Arrays.asList(ecommerceLayer))
 	                .build()));
+		    
+		    
+		      // Função 3 - EventsFunction - Eventos de produtos  
+			  ecommerceCommons.setProductEventFunction(new Function(this, PRODUCT_EVENT_FUNCTION_VALUE, FunctionProps.builder()
+		                .runtime(AwsLambdaCdkApp.PROJECT_JAVA_RUNTIME)
+		                .functionName(PRODUCT_EVENT_FUNCTION_VALUE)
+		                .code(Code.fromAsset("../" + AwsLambdaCdkApp.PROJECT_LAMBDA_FUNCTIONS_NAME + "/", AssetOptions.builder()
+		                        .bundling(getBundlingOptions(AwsLambdaCdkApp.PROJECT_LAMBDA_FUNCTIONS_NAME))
+		                        .build()))
+		                .handler("com.br.aws.ecommerce.product.ProductEventFunction")
+		                .memorySize(256)
+		                .tracing(Tracing.ACTIVE)
+		                .insightsVersion(LambdaInsightsVersion.VERSION_1_0_119_0)
+		                .timeout(Duration.seconds(20))
+		                .environment(environments)
+		                .layers(Arrays.asList(ecommerceLayer))
+		                .logRetention(RetentionDays.ONE_WEEK)
+		                .build()));  
+			   
+			   ecommerceCommons.getProductEventFunction().grantInvoke(ecommerceCommons.getProductsAdminFunction());
 		
 	}
 	

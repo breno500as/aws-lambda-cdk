@@ -119,7 +119,7 @@ public class DynamoDbStack  extends Stack {
 				.sortKey(Attribute.builder().name("sk").type(AttributeType.STRING).build())
 				.projectionType(ProjectionType.ALL).build());
 		
-		eventsTable.grantWriteData(ecommerceCommons.getEventsFunction());
+		eventsTable.grantWriteData(ecommerceCommons.getProductEventFunction());
 		
 		
 		this.grantPutItemAndQueryActionTable(eventsTable, ecommerceCommons);

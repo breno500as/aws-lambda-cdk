@@ -37,7 +37,7 @@ public class AwsLambdaCdkApp {
 				                                		         .build())
 				                                .build();
 
-		final EcommerceCommons ecommerceCommons = new EcommerceCommons();
+		final EcommerceFunctionCommons ecommerceCommons = new EcommerceFunctionCommons();
 		
 		final LambdaLayersStack ecommerceLayersStack = new LambdaLayersStack(app, "LambdaLayersStack", stackProps);
 
@@ -53,7 +53,7 @@ public class AwsLambdaCdkApp {
 		
 	 	new DynamoDbStack(app, "DynamoDbStack", ecommerceCommons, stackProps);
 	 	
-	 	new InvoiceStack(app, "InvoiceStack", stackProps);
+	 	new InvoiceStack(app, "InvoiceStack", ecommerceCommons, stackProps);
 		 
 
 		app.synth();

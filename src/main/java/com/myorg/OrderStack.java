@@ -44,7 +44,7 @@ public class OrderStack extends Stack implements DockerBuildStack {
 	
 	public static final String ORDERS_EVENT_FETCH_FUNCTION_VALUE = "OrdersEventFetchFunction";
  
-	public OrderStack(final Construct scope, final String id, EcommerceCommons ecommerceCommons, final StackProps props) {
+	public OrderStack(final Construct scope, final String id, EcommerceFunctionCommons ecommerceCommons, final StackProps props) {
 		
 		       super(scope, id, props);
 		       
@@ -122,7 +122,7 @@ public class OrderStack extends Stack implements DockerBuildStack {
 			   
 	}
 	
-	private void createFunctions(EcommerceCommons ecommerceCommons, final SnsTopic orderEventSnsTopic) {
+	private void createFunctions(EcommerceFunctionCommons ecommerceCommons, final SnsTopic orderEventSnsTopic) {
 		
 		   // Passa variáveis de ambiente para as funções
 		   final Map<String, String> environments = new HashMap<>();

@@ -35,7 +35,7 @@ public class ProductStack extends Stack implements DockerBuildStack {
 	
 
  
-	public ProductStack(final Construct scope, final String id, EcommerceCommons ecommerceCommons, final StackProps props) {
+	public ProductStack(final Construct scope, final String id, EcommerceFunctionCommons ecommerceCommons, final StackProps props) {
 		
 		   super(scope, id, props);
  

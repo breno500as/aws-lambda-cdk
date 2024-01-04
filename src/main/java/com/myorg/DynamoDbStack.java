@@ -36,7 +36,7 @@ public class DynamoDbStack  extends Stack {
 	public static final String TABLE_ORDER = "order";
 	
 	
-	public DynamoDbStack(final Construct scope, final String id, EcommerceCommons ecommerceCommons, StackProps stackProps) {
+	public DynamoDbStack(final Construct scope, final String id, EcommerceFunctionCommons ecommerceCommons, StackProps stackProps) {
 		super(scope, id, stackProps);
 	
 		this.createProductTable(ecommerceCommons);
@@ -46,7 +46,7 @@ public class DynamoDbStack  extends Stack {
 	}
 	
 	
-	private void createProductTable(EcommerceCommons ecommerceCommons) {
+	private void createProductTable(EcommerceFunctionCommons ecommerceCommons) {
 		
 		final Table productTable = Table.Builder.create(this, "ProductTable")
 				.tableName(TABLE_PRODUCT)
@@ -82,7 +82,7 @@ public class DynamoDbStack  extends Stack {
 
 	}
 	
-	private void createEventsTable(EcommerceCommons ecommerceCommons) {
+	private void createEventsTable(EcommerceFunctionCommons ecommerceCommons) {
 	
 		final Table eventsTable = Table.Builder.create(this, "EventTable")
 				.tableName(TABLE_EVENT)
@@ -126,7 +126,7 @@ public class DynamoDbStack  extends Stack {
 		
 	}
 	
-	private void grantPutItemAndQueryActionTable(Table eventsTable, EcommerceCommons ecommerceCommons) {
+	private void grantPutItemAndQueryActionTable(Table eventsTable, EcommerceFunctionCommons ecommerceCommons) {
 		
 		// Permissão de dar uma única ação de put item no dynamodb ao invés de dar permissão de escrita que libera várias ações
 		final Map<String,List<String>> fieldStringRestriction = new HashMap<String, List<String>>();
@@ -154,7 +154,7 @@ public class DynamoDbStack  extends Stack {
 		
 	}
 	
-	private void createOrderTable(EcommerceCommons ecommerceCommons) {
+	private void createOrderTable(EcommerceFunctionCommons ecommerceCommons) {
 		
 		final Table orderTable = Table.Builder.create(this, "OrderTable")
 				.tableName(TABLE_ORDER)

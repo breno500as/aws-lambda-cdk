@@ -46,7 +46,7 @@ public class InvoiceStack extends Stack implements DockerBuildStack {
 	private static final  String WEB_SOCKET_API_GATEWAY_KEY = "WEB_SOCKET_API_GATEWAY_KEY";
 	
 
-	public InvoiceStack(final Construct scope, final String id, StackProps stackProps) {
+	public InvoiceStack(final Construct scope, final String id, final EcommerceFunctionCommons ecommerceCommons, StackProps stackProps) {
 		super(scope, id, stackProps);
 		
 		 final Map<String, String> environments = new HashMap<>();

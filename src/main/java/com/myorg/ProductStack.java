@@ -22,7 +22,7 @@ import software.constructs.Construct;
 
 
 
-public class ProductStack extends Stack implements DockerBuildStack {
+public class ProductStack extends Stack implements BaseDockerBuild {
 	
 
 	public static final String PRODUCT_EVENT_FUNCTION_KEY = "PRODUCT_EVENT_FUNCTION_KEY";

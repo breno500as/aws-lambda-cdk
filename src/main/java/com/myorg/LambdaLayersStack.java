@@ -13,7 +13,7 @@ import software.amazon.awscdk.services.ssm.StringParameter;
 import software.amazon.awscdk.services.ssm.StringParameterProps;
 import software.constructs.Construct;
 
-public class LambdaLayersStack extends Stack implements DockerBuildStack {
+public class LambdaLayersStack extends Stack implements BaseDockerBuild {
 
 	 
 	private static final String PROJECT_LAMBDA_LAYERS_NAME = "aws-ecommerce-lambda-layers";

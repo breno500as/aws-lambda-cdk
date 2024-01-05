@@ -31,7 +31,7 @@ import software.amazon.awscdk.services.sqs.QueueEncryption;
 import software.amazon.awscdk.services.ssm.StringParameter;
 import software.constructs.Construct;
 
-public class OrderStack extends Stack implements DockerBuildStack {
+public class OrderStack extends Stack implements BaseDockerBuild {
 	
 	
 	public static final String ORDERS_FUNCTION_VALUE = "OrdersFunction";

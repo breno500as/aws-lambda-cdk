@@ -27,7 +27,7 @@ import software.amazon.awscdk.services.sqs.Queue;
 import software.amazon.awscdk.services.sqs.QueueEncryption;
 import software.constructs.Construct;
 
-public class EventBridgeStack extends Stack implements DockerBuildStack {
+public class EventBridgeStack extends Stack implements BaseDockerBuild {
 
 	private EventBus eventBus;
 	

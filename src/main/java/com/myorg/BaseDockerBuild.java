@@ -8,7 +8,7 @@ import java.util.Arrays;
 import software.amazon.awscdk.BundlingOptions;
 import software.amazon.awscdk.DockerVolume;
 
-public interface DockerBuildStack {
+public interface BaseDockerBuild {
 
 	public default BundlingOptions getBundlingOptions(String projectName) {
 		

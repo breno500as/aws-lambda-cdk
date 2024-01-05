@@ -41,7 +41,7 @@ import software.amazon.awscdk.services.sqs.QueueEncryption;
 import software.amazon.awscdk.services.ssm.StringParameter;
 import software.constructs.Construct;
 
-public class InvoiceStack extends Stack implements DockerBuildStack {
+public class InvoiceStack extends Stack implements BaseDockerBuild {
 	
 	private static final String TABLE_INVOICE = "invoice";
 	

@@ -45,19 +45,25 @@ public class InvoiceStack extends Stack implements DockerBuildStack {
 	
 	private static final String TABLE_INVOICE = "invoice";
 	
-	private static final String INVOICE_DDB = "INVOICE_DDB";
+	private static final String INVOICE_DDB_KEY = "INVOICE_DDB_KEY";
 	
 	private static final  String S3_BUCKET_KEY = "S3_BUCKET_KEY";
 	
 	private static final  String WEB_SOCKET_API_GATEWAY_KEY = "WEB_SOCKET_API_GATEWAY_KEY";
 	
 
-	public InvoiceStack(final Construct scope, final String id, final EcommerceFunctionCommons ecommerceCommons, StackProps stackProps) {
+	public InvoiceStack(final Construct scope, final String id, final EcommerceCommons ecommerceCommons, StackProps stackProps) {
 		super(scope, id, stackProps);
 		
 		 final Map<String, String> environments = new HashMap<>();
-		 environments.put(INVOICE_DDB, TABLE_INVOICE);
-		 environments.put(DynamoDbStack.EVENTS_DDB, DynamoDbStack.TABLE_EVENT);
+		 environments.put(INVOICE_DDB_KEY, TABLE_INVOICE);
+		 environments.put(DynamoDbStack.EVENTS_DDB_KEY, DynamoDbStack.TABLE_EVENT);
+		 environments.put(EventBridgeStack.AUDIT_EVENT_BRIDGE_KEY, EventBridgeStack.AUDIT_EVENT_BRIDGE_VALUE);
+		 environments.put(EventBridgeStack.FAIL_CHECK_INVOICE_KEY, EventBridgeStack.FAIL_CHECK_INVOICE_NUMBER_VALUE);
+		 environments.put(EventBridgeStack.INVOICE_TIMEOUT_KEY, EventBridgeStack.INVOICE_TIMEOUT_VALUE);
+		 
+		 
+		 environments.put(EventBridgeStack.INVOICE_SOURCE_EVENT_BRIDGE_KEY, EventBridgeStack.INVOICE_SOURCE_EVENT_VALUE);
 		
  
 		final Table invoiceTable = Table.Builder.create(this, "InvoiceTable")
@@ -126,7 +132,7 @@ public class InvoiceStack extends Stack implements DockerBuildStack {
 	                .handler("com.br.aws.ecommerce.invoice.InvoiceDefaultFunction")
 	                .memorySize(256)
 	                .tracing(Tracing.ACTIVE)
-	                .timeout(Duration.seconds(30))
+	                .timeout(Duration.seconds(20))
 	                .logRetention(RetentionDays.ONE_WEEK)
 	                .build()));
 		  

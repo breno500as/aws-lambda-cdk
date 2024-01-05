@@ -33,7 +33,7 @@ public class ApiGatewayStack  extends Stack {
 	
  
 
-	public ApiGatewayStack(final Construct scope, final String id, EcommerceFunctionCommons ecommerceCommons, StackProps stackProps) {
+	public ApiGatewayStack(final Construct scope, final String id, EcommerceCommons ecommerceCommons, StackProps stackProps) {
 		
 		 super(scope, id, stackProps);
 		 
@@ -72,7 +72,7 @@ public class ApiGatewayStack  extends Stack {
  
 	}
 	
-	private void createApiProducts(EcommerceFunctionCommons ecommerceCommons, RestApi restApi) {
+	private void createApiProducts(EcommerceCommons ecommerceCommons, RestApi restApi) {
 		
 
 		
@@ -92,7 +92,7 @@ public class ApiGatewayStack  extends Stack {
 		
 	}
 	
-	private void createApiOrders(EcommerceFunctionCommons ecommerceCommons, RestApi restApi) {
+	private void createApiOrders(EcommerceCommons ecommerceCommons, RestApi restApi) {
 		
 		 final LambdaIntegration lambdaOrderIntegration = LambdaIntegration.Builder.create(ecommerceCommons.getOrdersFunction()).build();
 		 final Resource orderResource =  restApi.getRoot().addResource("orders");
@@ -159,7 +159,7 @@ public class ApiGatewayStack  extends Stack {
 		
 	}
 	
-	private void createApiOrdersEventsFetch(EcommerceFunctionCommons ecommerceCommons, RestApi restApi,  final Resource orderResource) {
+	private void createApiOrdersEventsFetch(EcommerceCommons ecommerceCommons, RestApi restApi,  final Resource orderResource) {
 		
 		final Resource eventResource =  orderResource.addResource("events");
 		

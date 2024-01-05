@@ -44,7 +44,7 @@ public class OrderStack extends Stack implements DockerBuildStack {
 	
 	public static final String ORDERS_EVENT_FETCH_FUNCTION_VALUE = "OrdersEventFetchFunction";
  
-	public OrderStack(final Construct scope, final String id, EcommerceFunctionCommons ecommerceCommons, final StackProps props) {
+	public OrderStack(final Construct scope, final String id, EcommerceCommons ecommerceCommons, final StackProps props) {
 		
 		       super(scope, id, props);
 		       
@@ -122,13 +122,17 @@ public class OrderStack extends Stack implements DockerBuildStack {
 			   
 	}
 	
-	private void createFunctions(EcommerceFunctionCommons ecommerceCommons, final SnsTopic orderEventSnsTopic) {
+	private void createFunctions(EcommerceCommons ecommerceCommons, final SnsTopic orderEventSnsTopic) {
 		
 		   // Passa variáveis de ambiente para as funções
 		   final Map<String, String> environments = new HashMap<>();
-		   environments.put(DynamoDbStack.ORDERS_DDB, DynamoDbStack.TABLE_ORDER);
-		   environments.put(DynamoDbStack.EVENTS_DDB, DynamoDbStack.TABLE_EVENT);
-		   environments.put(DynamoDbStack.PRODUCTS_DDB, DynamoDbStack.TABLE_PRODUCT);
+		   environments.put(DynamoDbStack.ORDERS_DDB_KEY, DynamoDbStack.TABLE_ORDER);
+		   environments.put(DynamoDbStack.EVENTS_DDB_KEY, DynamoDbStack.TABLE_EVENT);
+		   environments.put(DynamoDbStack.PRODUCTS_DDB_KEY, DynamoDbStack.TABLE_PRODUCT);
+		   environments.put(EventBridgeStack.AUDIT_EVENT_BRIDGE_KEY, EventBridgeStack.AUDIT_EVENT_BRIDGE_VALUE);
+		   environments.put(EventBridgeStack.ORDER_SOURCE_EVENT_BRIDGE_KEY, EventBridgeStack.ORDER_SOURCE_EVENT_VALUE);
+		   environments.put(EventBridgeStack.PRODUCT_NOT_FOUND_KEY, EventBridgeStack.PRODUCT_NOT_FOUND_VALUE);
+		  
 		   environments.put(AwsLambdaCdkApp.POWERTOOLS_SERVICE_KEY, AwsLambdaCdkApp.POWERTOOLS_SERVICE_VALUE);
 		   environments.put("ORDER_EVENTS_TOPIC_ARN", orderEventSnsTopic.getTopic().getTopicArn());
 		   
@@ -163,7 +167,7 @@ public class OrderStack extends Stack implements DockerBuildStack {
 	                .memorySize(256)
 	                .tracing(Tracing.ACTIVE)
 	                .insightsVersion(LambdaInsightsVersion.VERSION_1_0_119_0)
-	                .timeout(Duration.seconds(20))
+	                .timeout(Duration.seconds(10))
 	                .environment(environments)
 	                .layers(Arrays.asList(ecommerceLayer))
 	                .logRetention(RetentionDays.ONE_WEEK)
@@ -179,7 +183,7 @@ public class OrderStack extends Stack implements DockerBuildStack {
 	                .memorySize(256)
 	                .tracing(Tracing.ACTIVE)
 	                .insightsVersion(LambdaInsightsVersion.VERSION_1_0_119_0)
-	                .timeout(Duration.seconds(20))
+	                .timeout(Duration.seconds(10))
 	                .environment(environments)
 	                .layers(Arrays.asList(ecommerceLayer))
 	                .logRetention(RetentionDays.ONE_WEEK)
@@ -212,7 +216,7 @@ public class OrderStack extends Stack implements DockerBuildStack {
 	                .memorySize(256)
 	                .tracing(Tracing.ACTIVE)
 	                .insightsVersion(LambdaInsightsVersion.VERSION_1_0_119_0)
-	                .timeout(Duration.seconds(20))
+	                .timeout(Duration.seconds(10))
 	                .environment(environments)
 	                .layers(Arrays.asList(ecommerceLayer))
 	                .logRetention(RetentionDays.ONE_WEEK)

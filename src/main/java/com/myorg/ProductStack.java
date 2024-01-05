@@ -35,15 +35,15 @@ public class ProductStack extends Stack implements DockerBuildStack {
 	
 
  
-	public ProductStack(final Construct scope, final String id, EcommerceFunctionCommons ecommerceCommons, final StackProps props) {
+	public ProductStack(final Construct scope, final String id, EcommerceCommons ecommerceCommons, final StackProps props) {
 		
 		   super(scope, id, props);
  
 		   
 		   final Map<String, String> environments = new HashMap<>();
-		   environments.put(DynamoDbStack.EVENTS_DDB, DynamoDbStack.TABLE_EVENT);
+		   environments.put(DynamoDbStack.EVENTS_DDB_KEY, DynamoDbStack.TABLE_EVENT);
 		   environments.put(PRODUCT_EVENT_FUNCTION_KEY, PRODUCT_EVENT_FUNCTION_VALUE);
-		   environments.put(DynamoDbStack.PRODUCTS_DDB, DynamoDbStack.TABLE_PRODUCT);
+		   environments.put(DynamoDbStack.PRODUCTS_DDB_KEY, DynamoDbStack.TABLE_PRODUCT);
 		   environments.put(AwsLambdaCdkApp.POWERTOOLS_SERVICE_KEY, AwsLambdaCdkApp.POWERTOOLS_SERVICE_VALUE);
 		   
 		   
@@ -61,7 +61,7 @@ public class ProductStack extends Stack implements DockerBuildStack {
 	                .handler("com.br.aws.ecommerce.product.ProductFetchFunction")
 	                .memorySize(256)
 	                .insightsVersion(LambdaInsightsVersion.VERSION_1_0_119_0)
-	                .timeout(Duration.seconds(20))
+	                .timeout(Duration.seconds(10))
 	                .tracing(Tracing.ACTIVE)
 	                .environment(environments)
 	                .layers(Arrays.asList(ecommerceLayer))
@@ -80,7 +80,7 @@ public class ProductStack extends Stack implements DockerBuildStack {
 	                .memorySize(256)
 	                .environment(environments)
 	                .insightsVersion(LambdaInsightsVersion.VERSION_1_0_119_0)
-	                .timeout(Duration.seconds(40))
+	                .timeout(Duration.seconds(30))
 	                .logRetention(RetentionDays.ONE_WEEK)
 	                .tracing(Tracing.ACTIVE)
 	                .layers(Arrays.asList(ecommerceLayer))
@@ -98,7 +98,7 @@ public class ProductStack extends Stack implements DockerBuildStack {
 		                .memorySize(256)
 		                .tracing(Tracing.ACTIVE)
 		                .insightsVersion(LambdaInsightsVersion.VERSION_1_0_119_0)
-		                .timeout(Duration.seconds(20))
+		                .timeout(Duration.seconds(10))
 		                .environment(environments)
 		                .layers(Arrays.asList(ecommerceLayer))
 		                .logRetention(RetentionDays.ONE_WEEK)

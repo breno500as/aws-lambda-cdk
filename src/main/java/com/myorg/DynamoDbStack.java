@@ -23,11 +23,11 @@ import software.constructs.Construct;
 
 public class DynamoDbStack  extends Stack {
 	
-	public static final String PRODUCTS_DDB = "PRODUCTS_DDB";
+	public static final String PRODUCTS_DDB_KEY = "PRODUCTS_DDB_KEY";
 	
-	public static final String ORDERS_DDB = "ORDERS_DDB";
+	public static final String ORDERS_DDB_KEY = "ORDERS_DDB_KEY";
 
-	public static final String EVENTS_DDB = "EVENTS_DDB";
+	public static final String EVENTS_DDB_KEY = "EVENTS_DDB_KEY";
 
 	public static final String TABLE_PRODUCT = "product";
 
@@ -36,7 +36,7 @@ public class DynamoDbStack  extends Stack {
 	public static final String TABLE_ORDER = "order";
 	
 	
-	public DynamoDbStack(final Construct scope, final String id, EcommerceFunctionCommons ecommerceCommons, StackProps stackProps) {
+	public DynamoDbStack(final Construct scope, final String id, EcommerceCommons ecommerceCommons, StackProps stackProps) {
 		super(scope, id, stackProps);
 	
 		this.createProductTable(ecommerceCommons);
@@ -46,7 +46,7 @@ public class DynamoDbStack  extends Stack {
 	}
 	
 	
-	private void createProductTable(EcommerceFunctionCommons ecommerceCommons) {
+	private void createProductTable(EcommerceCommons ecommerceCommons) {
 		
 		final Table productTable = Table.Builder.create(this, "ProductTable")
 				.tableName(TABLE_PRODUCT)
@@ -82,7 +82,7 @@ public class DynamoDbStack  extends Stack {
 
 	}
 	
-	private void createEventsTable(EcommerceFunctionCommons ecommerceCommons) {
+	private void createEventsTable(EcommerceCommons ecommerceCommons) {
 	
 		final Table eventsTable = Table.Builder.create(this, "EventTable")
 				.tableName(TABLE_EVENT)
@@ -126,7 +126,7 @@ public class DynamoDbStack  extends Stack {
 		
 	}
 	
-	private void grantPutItemAndQueryActionTable(Table eventsTable, EcommerceFunctionCommons ecommerceCommons) {
+	private void grantPutItemAndQueryActionTable(Table eventsTable, EcommerceCommons ecommerceCommons) {
 		
 		ecommerceCommons.getOrdersEventFunction().addToRolePolicy(PolicyStatement.Builder.create()
 				.effect(Effect.ALLOW)
@@ -165,9 +165,9 @@ public class DynamoDbStack  extends Stack {
 		return conditions;
 	}
 	
-	private void createOrderTable(EcommerceFunctionCommons ecommerceCommons) {
+	private void createOrderTable(EcommerceCommons ecommerceCommons) {
 		
-		final Table orderTable = Table.Builder.create(this, "OrderTable")
+		ecommerceCommons.setOrderTable(Table.Builder.create(this, "OrderTable")
 				.tableName(TABLE_ORDER)
 				.readCapacity(1)
 				.writeCapacity(1)
@@ -175,9 +175,9 @@ public class DynamoDbStack  extends Stack {
 				.partitionKey(Attribute.builder().name("pk").type(AttributeType.STRING).build())
 				.sortKey(Attribute.builder().name("sk").type(AttributeType.STRING).build())
 				.timeToLiveAttribute("ttl")
-				.removalPolicy(RemovalPolicy.DESTROY).build();
+				.removalPolicy(RemovalPolicy.DESTROY).build());
 
-		orderTable.autoScaleReadCapacity(EnableScalingProps.builder()
+		ecommerceCommons.getOrderTable().autoScaleReadCapacity(EnableScalingProps.builder()
 				                                      .minCapacity(1)
 				                                      .maxCapacity(4)
 				                                      .build())
@@ -187,7 +187,7 @@ public class DynamoDbStack  extends Stack {
 						                                                       .build());
 		
 		
-		orderTable.autoScaleWriteCapacity(EnableScalingProps.builder()
+		ecommerceCommons.getOrderTable().autoScaleWriteCapacity(EnableScalingProps.builder()
 				                                                   .minCapacity(1)
 				                                                   .maxCapacity(4)
 				                                                   .build())
@@ -196,7 +196,7 @@ public class DynamoDbStack  extends Stack {
 				                                                               .scaleOutCooldown(Duration.seconds(30))
 				                                                               .build());
 		
-		orderTable.grantReadWriteData(ecommerceCommons.getOrdersFunction());
+		ecommerceCommons.getOrderTable().grantReadWriteData(ecommerceCommons.getOrdersFunction());
 	}
 
 }

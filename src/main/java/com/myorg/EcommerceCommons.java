@@ -1,8 +1,10 @@
 package com.myorg;
 
+import software.amazon.awscdk.services.dynamodb.Table;
 import software.amazon.awscdk.services.lambda.Function;
+import software.amazon.awscdk.services.sqs.Queue;
 
-public class EcommerceFunctionCommons {
+public class EcommerceCommons {
 
 	private Function productsFetchFunction;
 
@@ -33,6 +35,10 @@ public class EcommerceFunctionCommons {
 	private Function invoiceDisconnectionFunction;
 
 	private Function invoiceConnectionFunction;
+	
+	private Queue invoiceTimeoutQueue;
+	
+	private Table orderTable;
 
 	public Function getProductsFetchFunction() {
 		return productsFetchFunction;
@@ -152,6 +158,22 @@ public class EcommerceFunctionCommons {
 
 	public void setInvoiceConnectionFunction(Function invoiceConnectionFunction) {
 		this.invoiceConnectionFunction = invoiceConnectionFunction;
+	}
+	
+	public Queue getInvoiceTimeoutQueue() {
+		return invoiceTimeoutQueue;
+	}
+	
+	public void setInvoiceTimeoutQueue(Queue invoiceTimeoutQueue) {
+		this.invoiceTimeoutQueue = invoiceTimeoutQueue;
+	}
+	
+	public Table getOrderTable() {
+		return orderTable;
+	}
+	
+	public void setOrderTable(Table orderTable) {
+		this.orderTable = orderTable;
 	}
 
 }

@@ -128,20 +128,19 @@ public class DynamoDbStack  extends Stack {
 	
 	private void grantPutItemAndQueryActionTable(Table eventsTable, EcommerceFunctionCommons ecommerceCommons) {
 		
-		// Permissão de dar uma única ação de put item no dynamodb ao invés de dar permissão de escrita que libera várias ações
-		final Map<String,List<String>> fieldStringRestriction = new HashMap<String, List<String>>();
-		fieldStringRestriction.put("dynamodb:LeadingKeys", Arrays.asList("#order_*"));
-		
-		final Map<String, Map<String,List<String>>> conditions = new HashMap<>();
-		conditions.put("ForAllValues:StringLike", fieldStringRestriction);
-		
-	 
-	
 		ecommerceCommons.getOrdersEventFunction().addToRolePolicy(PolicyStatement.Builder.create()
 				.effect(Effect.ALLOW)
 				.actions(Arrays.asList("dynamodb:PutItem"))
 				.resources(Arrays.asList(eventsTable.getTableArn()))
-				.conditions(conditions)
+				.conditions(this.createConditions("#order_*"))
+				.build());
+		
+		
+		ecommerceCommons.getInvoiceEventFunction().addToRolePolicy(PolicyStatement.Builder.create()
+				.effect(Effect.ALLOW)
+				.actions(Arrays.asList("dynamodb:PutItem"))
+				.resources(Arrays.asList(eventsTable.getTableArn()))
+				.conditions(this.createConditions("#invoice_*"))
 				.build());
 		
 		
@@ -152,6 +151,18 @@ public class DynamoDbStack  extends Stack {
 				.resources(Arrays.asList(eventsTable.getTableArn() + "/index/emailIndex"))
 				.build());
 		
+	}
+	
+	private final Map<String, Map<String,List<String>>> createConditions(String key) {
+		
+		// Permissão de dar uma única ação de put item no dynamodb ao invés de dar permissão de escrita que libera várias ações
+		final Map<String,List<String>> fieldStringRestriction = new HashMap<String, List<String>>();
+		fieldStringRestriction.put("dynamodb:LeadingKeys", Arrays.asList(key));
+		
+		final Map<String, Map<String,List<String>>> conditions = new HashMap<>();
+		conditions.put("ForAllValues:StringLike", fieldStringRestriction);
+		
+		return conditions;
 	}
 	
 	private void createOrderTable(EcommerceFunctionCommons ecommerceCommons) {

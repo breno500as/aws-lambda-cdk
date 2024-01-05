@@ -1,6 +1,7 @@
 {
    "invoiceNumber": "ABC-123",
-   "custumerName": "teste",
-   "productId": 3,
-   "quantity": 2
+   "custumerName": "teste@gmail.com",
+   "productId": "bbd07a41-4b5e-422c-9315-0539ef576b23",
+   "quantity": 2,
+   "totalValue":"500"
 }

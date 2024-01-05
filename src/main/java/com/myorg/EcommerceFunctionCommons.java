@@ -20,6 +20,20 @@ public class EcommerceFunctionCommons {
 
 	private Function ordersEmailFunction;
 
+	private Function invoiceEventFunction;
+
+	private Function invoiceCancelImportFunction;
+
+	private Function invoiceImportFunction;
+
+	private Function invoiceGetUrlFunction;
+
+	private Function invoiceDefaultFunction;
+
+	private Function invoiceDisconnectionFunction;
+
+	private Function invoiceConnectionFunction;
+
 	public Function getProductsFetchFunction() {
 		return productsFetchFunction;
 	}
@@ -82,6 +96,62 @@ public class EcommerceFunctionCommons {
 
 	public void setOrdersEventFetchFunction(Function ordersEventFetchFunction) {
 		this.ordersEventFetchFunction = ordersEventFetchFunction;
+	}
+
+	public Function getInvoiceEventFunction() {
+		return invoiceEventFunction;
+	}
+
+	public void setInvoiceEventFunction(Function invoiceEventFunction) {
+		this.invoiceEventFunction = invoiceEventFunction;
+	}
+
+	public Function getInvoiceCancelImportFunction() {
+		return invoiceCancelImportFunction;
+	}
+
+	public void setInvoiceCancelImportFunction(Function invoiceCancelImportFunction) {
+		this.invoiceCancelImportFunction = invoiceCancelImportFunction;
+	}
+
+	public Function getInvoiceImportFunction() {
+		return invoiceImportFunction;
+	}
+
+	public void setInvoiceImportFunction(Function invoiceImportFunction) {
+		this.invoiceImportFunction = invoiceImportFunction;
+	}
+
+	public Function getInvoiceGetUrlFunction() {
+		return invoiceGetUrlFunction;
+	}
+
+	public void setInvoiceGetUrlFunction(Function invoiceGetUrlFunction) {
+		this.invoiceGetUrlFunction = invoiceGetUrlFunction;
+	}
+
+	public Function getInvoiceDefaultFunction() {
+		return invoiceDefaultFunction;
+	}
+
+	public void setInvoiceDefaultFunction(Function invoiceDefaultFunction) {
+		this.invoiceDefaultFunction = invoiceDefaultFunction;
+	}
+
+	public Function getInvoiceDisconnectionFunction() {
+		return invoiceDisconnectionFunction;
+	}
+
+	public void setInvoiceDisconnectionFunction(Function invoiceDisconnectionFunction) {
+		this.invoiceDisconnectionFunction = invoiceDisconnectionFunction;
+	}
+
+	public Function getInvoiceConnectionFunction() {
+		return invoiceConnectionFunction;
+	}
+
+	public void setInvoiceConnectionFunction(Function invoiceConnectionFunction) {
+		this.invoiceConnectionFunction = invoiceConnectionFunction;
 	}
 
 }

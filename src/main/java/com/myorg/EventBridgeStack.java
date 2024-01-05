@@ -86,7 +86,7 @@ public class EventBridgeStack extends Stack implements DockerBuildStack {
 	
 	private void createRuleTargetOrder(final Map<String, String> environments) {
 		
-		// Rule Order
+		// Rule product not found order
 		final Map<String, Object> detailRule = new HashMap<>();
 		detailRule.put("reason", Arrays.asList(PRODUCT_NOT_FOUND_VALUE));
 				
@@ -101,7 +101,7 @@ public class EventBridgeStack extends Stack implements DockerBuildStack {
 							      .build()).
 						 build());
 				
-		 // Target Order
+		 // Target product not found order
 		 final Function orderErrorsFunction = new Function(this, "OrdersErrorsFunction", FunctionProps.builder()
 		                .runtime(AwsLambdaCdkApp.PROJECT_JAVA_RUNTIME)
 		                .functionName("OrdersErrorsFunction")

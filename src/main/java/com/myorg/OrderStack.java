@@ -54,7 +54,7 @@ public class OrderStack extends Stack implements BaseDockerBuild {
 						.create(Topic.Builder.create(this, "OrderEventsTopic").topicName("order-events-topic").build()).build();
 
 		       
-				this.createFunctions(ecommerceCommons, orderEventSnsTopic);
+			   this.createFunctions(ecommerceCommons, orderEventSnsTopic);
 			  
 			   orderEventSnsTopic.getTopic().grantPublish(ecommerceCommons.getOrdersFunction());
 			   
@@ -97,8 +97,6 @@ public class OrderStack extends Stack implements BaseDockerBuild {
 					   .deadLetterQueue(null)
 					   .enforceSsl(false)
 					   .build();
-			   
-			     
 			   
 			   
 			   // Subscriber 3 -Adiciona a fila SQS como subscriber da função de orders

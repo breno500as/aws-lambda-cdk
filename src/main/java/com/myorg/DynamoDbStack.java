@@ -15,10 +15,16 @@ import software.amazon.awscdk.services.dynamodb.BillingMode;
 import software.amazon.awscdk.services.dynamodb.EnableScalingProps;
 import software.amazon.awscdk.services.dynamodb.GlobalSecondaryIndexProps;
 import software.amazon.awscdk.services.dynamodb.ProjectionType;
+import software.amazon.awscdk.services.dynamodb.StreamViewType;
 import software.amazon.awscdk.services.dynamodb.Table;
 import software.amazon.awscdk.services.dynamodb.UtilizationScalingProps;
 import software.amazon.awscdk.services.iam.Effect;
 import software.amazon.awscdk.services.iam.PolicyStatement;
+import software.amazon.awscdk.services.lambda.StartingPosition;
+import software.amazon.awscdk.services.lambda.eventsources.DynamoEventSource;
+import software.amazon.awscdk.services.lambda.eventsources.SqsDlq;
+import software.amazon.awscdk.services.sqs.Queue;
+import software.amazon.awscdk.services.sqs.QueueEncryption;
 import software.constructs.Construct;
 
 public class DynamoDbStack  extends Stack {
@@ -35,6 +41,10 @@ public class DynamoDbStack  extends Stack {
 
 	public static final String TABLE_ORDER = "order";
 	
+	public static final String TABLE_INVOICE = "invoice";
+	
+	public static final String INVOICE_DDB_KEY = "INVOICE_DDB_KEY";
+	
 	
 	public DynamoDbStack(final Construct scope, final String id, EcommerceCommons ecommerceCommons, StackProps stackProps) {
 		super(scope, id, stackProps);
@@ -42,6 +52,7 @@ public class DynamoDbStack  extends Stack {
 		this.createProductTable(ecommerceCommons);
 	    this.createEventsTable(ecommerceCommons);
 	    this.createOrderTable(ecommerceCommons);
+	    this.createInvoiceTable(ecommerceCommons);
 		
 	}
 	
@@ -197,6 +208,41 @@ public class DynamoDbStack  extends Stack {
 				                                                               .build());
 		
 		ecommerceCommons.getOrderTable().grantReadWriteData(ecommerceCommons.getOrdersFunction());
+	}
+	
+	
+	private void createInvoiceTable(EcommerceCommons ecommerceCommons) {
+		
+		final Table invoiceTable = Table.Builder.create(this, "InvoiceTable")
+				.tableName(TABLE_INVOICE)
+				.readCapacity(1)
+				.writeCapacity(1)
+				.billingMode(BillingMode.PROVISIONED)
+				.partitionKey(Attribute.builder().name("pk").type(AttributeType.STRING).build())
+				.sortKey(Attribute.builder().name("sk").type(AttributeType.STRING).build())
+				.timeToLiveAttribute("ttl")
+				.stream(StreamViewType.NEW_AND_OLD_IMAGES)
+				.removalPolicy(RemovalPolicy.DESTROY).build();
+		
+		  invoiceTable.grantWriteData(ecommerceCommons.getInvoiceGetUrlFunction());
+		  invoiceTable.grantReadWriteData(ecommerceCommons.getInvoiceImportFunction());
+		  invoiceTable.grantReadWriteData(ecommerceCommons.getInvoiceCancelImportFunction());
+		  
+          // Adiciona a função de invoices como fonte de eventos de atualizações do dynamodb
+		   ecommerceCommons.getInvoiceEventFunction().addEventSource(DynamoEventSource.Builder.create(invoiceTable)
+						                      .startingPosition(StartingPosition.TRIM_HORIZON) // Começa a ler o streams do último evento enviado pelo dynamo
+						                      .batchSize(5) // Deixa acumular 5 eventos de atualizações antes de invocar a função lambda com as atualizações
+						                      .bisectBatchOnError(true) // Se der algum dentro da função referente ao lote de atualizações reevie as atualizações que não obtiveram sucesso
+						                      .enabled(true) 
+						                      .onFailure(new SqsDlq(Queue.Builder.create(this, "InvoiceEventsDlqQueue")
+						           		  		   .queueName("invoice-events-dlq-queue")
+						        		  		   .enforceSsl(false)
+						        		           .retentionPeriod(Duration.days(10))
+						        		  	       .encryption(QueueEncryption.UNENCRYPTED)
+						        		  		   .build()))
+						                      .retryAttempts(3)
+						                      .build());
+		
 	}
 
 }

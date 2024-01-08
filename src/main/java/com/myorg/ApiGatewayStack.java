@@ -239,25 +239,13 @@ public class ApiGatewayStack extends Stack implements BaseDockerBuild {
 		
 		final Policy adminGetUserPolicy =  new Policy(this, "AdminGetUserPolicy", PolicyProps.builder().statements(Arrays.asList(PolicyStatement.Builder.create()
 				                                                                                                   .effect(Effect.ALLOW)
-				                                                                                                   .actions(Arrays.asList("*"))
+				                                                                                                   .actions(Arrays.asList("cognito-idp:AdminGetUser"))
 				                                                                                                   .resources(Arrays.asList(this.adminPool.getUserPoolArn()))
 				                                                                                                   .build()))
 				                                                  .build());
 		
 		adminGetUserPolicy.attachToRole(ecommerceCommons.getProductsAdminFunction().getRole());
-		
-		
-		// Adiciona a permissão para que a função lambda busca informações do usuário logado no cognito
-	//	ecommerceCommons.getProductsAdminFunction().addToRolePolicy(PolicyStatement.Builder.create()
-	//			.effect(Effect.ALLOW)
-				//.actions(Arrays.asList("cognito-idp:AdminGetUser"))
-		//		.actions(Arrays.asList("*"))
-		//		.resources(Arrays.asList(this.adminPool.getUserPoolArn()))
-		//		.build());
-		
-		
-		
-		
+			
 		
 	}
 	
